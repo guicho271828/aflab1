@@ -24,7 +24,7 @@
 (defun edge (from to)
   (make-instance '2d-edge :from from :to to))
 (defpattern edge (from to)
-  `(class searchable-edge (to ,to) (from ,from)))
+  `(class 2d-edge (to ,to) (from ,from)))
 
 (defmethod connect ((from 2d-node) (to 2d-node))
   (let ((e (make-instance '2d-edge :to to :from from)))

@@ -35,7 +35,7 @@
 ;; fully tail-recursive
 
 (defun %a*-rec (end open closed h)
-  (match (findmin open :key h)
+  (ematch (findmin open :key h)
     ((and tree (tree _ _ node))
      (if (eq node end)
 	 tree
@@ -45,13 +45,14 @@
 (defun %iter-edge (end open closed h now edges)
   (if (null edges)
       (%a*-rec end open closed h)
-      (match now
+      (ematch now
 	((tree now-cost _ _)
-	 (match edges
+	 (ematch edges
 	   ((list* (and e 
 			(edge _ (and neighbor
 				     (tree (place neighbor-cost)
-					   (place parent) _))))
+					   (place parent)
+					   _))))
 		   rest)
 	    (let ((cost (+ now-cost
 			   (funcall h neighbor)

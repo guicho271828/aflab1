@@ -11,8 +11,9 @@ Copyright (c) 2013 guicho ()
 ;; blah blah blah.
 
 (defvar *max* 300)
+(defparameter *sample-num* 55)
 (defparameter *samples*
-  (iter (repeat 20)
+  (iter (repeat *sample-num*)
 	(collecting (2d (random *max*) (random *max*)))))
 
 (defparameter *edges* nil)
@@ -56,6 +57,7 @@ Copyright (c) 2013 guicho ()
 	  (let ((last (a*-search *start* *end*)))
 	    (with-graphics-state
 	      (set-rgba-fill 1 0 0 0.7)
+	      (set-rgba-stroke 1 0 0 0.7)
 	      (draw-path last)))
 	(ensure-directories-exist
 	 (asdf:system-relative-pathname

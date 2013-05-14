@@ -21,6 +21,11 @@
 
 (defun draw-path (tree)
   (match tree
-    ((tree _ parent content)
-     (draw content)
+    ((tree _ 
+	   (and parent (tree _ _ (2d x2 y2)))
+	   (and c1 (2d x1 y1)))
+     (draw c1)
+     (move-to x1 y1)
+     (line-to x2 y2)
+     (stroke)
      (draw-path parent))))

@@ -1,5 +1,5 @@
 (in-package :aflab1)
-(optimize*)
+(speed*)
 (cl-syntax:use-syntax :annot)
 
 @export
@@ -22,7 +22,7 @@
 @export
 (defun heuristic-value-to (end)
   (lambda (tree)
-    (match tree
+    (ematch tree
       ((tree known-cost _ node)
        (+ known-cost
 	  (heuristic-cost-between node end))))))
@@ -39,7 +39,10 @@
     ((and tree (tree _ _ node))
      (if (eq node end)
 	 tree
-	 (%iter-edge end open (cons tree closed) h tree (edges node))))
+	 (%iter-edge end
+		     (remove tree open)
+		     (cons tree closed)
+		     h tree (edges node))))
     (_ (error "there is no possible path!"))))
 
 (defun %iter-edge (end open closed h now edges)
@@ -48,32 +51,35 @@
       (ematch now
 	((tree now-cost _ _)
 	 (ematch edges
-	   ((list* (and e 
-			(edge _ (and neighbor
-				     (tree (place neighbor-cost)
-					   (place parent)
-					   _))))
-		   rest)
-	    (let ((cost (+ now-cost
-			   (funcall h neighbor)
-			   (cost e))))
-	      (cond
+	   ((list* (and e (edge _ neighbor)) rest)
+	    (let ((cost (+ now-cost (cost e)
+			   (heuristic-cost-between neighbor end))))
+	      (acond
 		((find neighbor open)
-		 (when (< cost neighbor-cost)
-		   (setf neighbor-cost cost)
-		   (setf parent now))
-		 (%iter-edge end open closed h now rest))
+		 (ematch it
+		   ((tree (place neighbor-cost)
+			  (place parent)
+			  _)
+		    (when (< cost neighbor-cost)
+		      (setf neighbor-cost cost)
+		      (setf parent now))
+		    (%iter-edge end open closed h now rest))))
 		
 		((find neighbor closed)
-		 (if (<= neighbor-cost cost)
-		     (%iter-edge end open closed h now rest)
-		     (progn
-		       (setf neighbor-cost cost)
-		       (setf parent now)
-		       (%iter-edge end
-				   (cons neighbor open)
-				   (remove neighbor closed)
-				   h now rest))))
-		(t (%iter-edge end
-			       (cons neighbor open)
-			       closed h now rest))))))))))
+		 (ematch it
+		   ((tree (place neighbor-cost)
+			  (place parent)
+			  _)
+		    (if (<= neighbor-cost cost)
+			(%iter-edge end open closed h now rest)
+			(progn
+			  (setf neighbor-cost cost)
+			  (setf parent now)
+			  (%iter-edge end
+				      (cons it open)
+				      (remove it closed)
+				      h now rest))))))
+		(t (%iter-edge
+		    end
+		    (cons (tree cost now neighbor) open)
+		    closed h now rest))))))))))

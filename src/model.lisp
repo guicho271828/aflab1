@@ -33,18 +33,18 @@
     e))
 
 (defmethod heuristic-cost-between ((from 2d-node) (to 2d-node))
-  (match to
+  (ematch to
     ((2d x1 y1 _)
-     (match from
+     (ematch from
        ((2d x2 y2 _)
 	(sqrt (+ (^2 (- x2 x1)) (^2 (- y2 y1)))))))))
 
 (defmethod cost + ((e 2d-edge))
-	   (match e
-	     ((edge to from)
-	      (match to
-		((2d x1 y1)
-		 (match from
-		   ((2d x2 y2)
-		    (sqrt (+ (^2 (- x2 x1)) (^2 (- y2 y1)))))))))))
+  (ematch e
+    ((edge to from)
+     (ematch to
+       ((2d x1 y1)
+	(ematch from
+	  ((2d x2 y2)
+	   (sqrt (+ (^2 (- x2 x1)) (^2 (- y2 y1)))))))))))
 

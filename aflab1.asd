@@ -29,8 +29,8 @@
                 :components
                 ((:file :package)
 		 (:file :mixin)
-		 (:file :a*-search)
-		 (:file :model))))
+		 (:file :model)
+		 (:file :a*-search))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

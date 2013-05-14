@@ -12,7 +12,7 @@ Copyright (c) 2013 guicho ()
 
 (defvar *max* 300)
 (defparameter *samples*
-  (iter (repeat 50)
+  (iter (repeat 20)
 	(collecting (2d (random *max*) (random *max*)))))
 
 (defparameter *edges* nil)
@@ -38,7 +38,11 @@ Copyright (c) 2013 guicho ()
   (pass))
 
 (defparameter *start* (random-elt *samples*))
-(defparameter *end* (random-elt *samples*))
+(defparameter *end* 
+  (iter (for candidate = (random-elt *samples*))
+	(if (eq *start* candidate)
+	    (next-iteration)
+	    (return candidate))))
 
 (test a*
   (finishes

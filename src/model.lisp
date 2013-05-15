@@ -5,41 +5,37 @@
 @export
 @export-accessors
 (defclass 2d-node (searchable-node)
-  ((edges :accessor edges :initarg :edges)
-   (x :accessor x :initarg :x)
-   (y :accessor y :initarg :y)))
+  ((x :accessor x :initarg :x :type number)
+   (y :accessor y :initarg :y :type number)))
 
 @export
-(defclass 2d-edge (searchable-edge)
-  ((to :accessor edge-to :initarg :to)
-   (from :accessor edge-from :initarg :from)))
+(defun 2d (x y &optional edges parent (cost MOST-POSITIVE-FIXNUM))
+  (make-instance '2d-node
+		 :x x :y y :edges edges
+		 :parent parent :cost cost))
+(defpattern 2d (x y)
+  `(class 2d-node (x ,x) (y ,y)))
 
 @export
-(defun 2d (x y &optional edges)
-  (make-instance '2d-node :x x :y y :edges edges))
-(defpattern 2d (x y &optional (edges '_))
-  `(class 2d-node (x ,x) (y ,y) (edges ,edges)))
+(defclass 2d-edge (searchable-edge) ())
 
-@export
-(defun edge (from to)
-  (make-instance '2d-edge :from from :to to))
-(defpattern edge (from to)
-  `(class 2d-edge (to ,to) (from ,from)))
+(defun 2d-edge (from to)
+  (%edge '2d-edge from to))
 
 (defmethod connect ((from 2d-node) (to 2d-node))
-  (let ((e (make-instance '2d-edge :to to :from from)))
+  (let ((e (2d-edge from to)))
     (push e (edges from))
     (push e (edges to))
     e))
 
 (defmethod heuristic-cost-between ((from 2d-node) (to 2d-node))
   (ematch to
-    ((2d x1 y1 _)
+    ((2d x1 y1)
      (ematch from
-       ((2d x2 y2 _)
+       ((2d x2 y2)
 	(sqrt (+ (^2 (- x2 x1)) (^2 (- y2 y1)))))))))
 
-(defmethod cost + ((e 2d-edge))
+(defmethod cost ((e 2d-edge))
   (ematch e
     ((edge to from)
      (ematch to

@@ -2,7 +2,7 @@
   This file is a part of aflab1 project.
   Copyright (c) 2013 guicho ()
 |#
-
+(require :fiveam)
 (in-package :cl-user)
 (defpackage aflab1-test-asd
   (:use :cl :asdf))
@@ -22,5 +22,10 @@
                 ((:file :package)
 		 (:file :drawer)
 		 (:file :core)
-		 (:file "aflab1"))))
-  :perform (load-op :after (op c) (asdf:clear-system c)))
+		 (:file :a-star)
+		 (:module :8puzzle
+			  :components
+			  ((:file :test))))))
+  :perform (load-op :after (op c) 
+		    (fiveam:run! :aflab1)
+		    (asdf:clear-system c)))

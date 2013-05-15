@@ -7,34 +7,38 @@
 @doc "a node used in lrta*/rta* searching. any subclass of
 `searchable-node' should implement a method HEURISTIC-COST-BETWEEN.
 also, it must provide an accessor EDGES."
-(defclass searchable-node () ())
-(defmethod initializing-instance :after
-	((n searchable-node) &key edges)
-  (when edges
-	(setf (edges n) edges)))
-(defgeneric edges (searchable-node))
-(defgeneric (setf edges) (edges searchable-node))
+(defclass searchable-node () 
+  ((edges :accessor edges :initarg :edges)
+   (cost :accessor cost :initarg :cost :type number
+	 :initform MOST-POSITIVE-FIXNUM)
+   (parent :accessor parent :initarg :parent :type searchable-node)))
+
+
+@export
+(defun node (edges parent cost)
+  (make-instance 'searchable-node
+		 :edges edges :parent parent :cost cost))
+(defpattern node (edges parent cost)
+  `(class searchable-node
+	  (edges ,edges) (parent ,parent)
+	  (cost ,cost)))
 
 @export @export-accessors @doc "an edge used in lrta*/rta*
 searching. any subclass of `searchable-edge' should implement a method
 `cost'.  Also, accessor EDGE-TO and EDGE-FROM should return a
 `searchable-node' instance."
-(defclass searchable-edge () ())
-(defmethod initializing-instance :after
-	((e searchable-edge) &key to from)
-  (when to
-	(setf (edge-to e) to))
-  (when from
-	(setf (edge-from e) from)))
+(defclass searchable-edge ()
+  ((to :accessor edge-to :initarg :to)
+   (from :accessor edge-from :initarg :from)))
 
 @export
-(defgeneric edge-to (searchable-edge))
-@export
-(defgeneric (setf edge-to) (edges searchable-edge))
-@export
-(defgeneric edge-from (searchable-edge))
-@export
-(defgeneric (setf edge-from) (edges searchable-edge))
+(defun edge (from to)
+  (%edge 'searchable-edge from to))
+(defun %edge (class from to)
+  (make-instance class :from from :to to))
+(defpattern edge (from to)
+  `(class searchable-edge (to ,to) (from ,from)))
+
 
 @export
 @doc "gives the cost between the two nodes. "
@@ -42,8 +46,7 @@ searching. any subclass of `searchable-edge' should implement a method
 	(searchable-node-from searchable-node-to))
 @export
 @doc "gives the real cost of an edge. it has `+' method combination."
-(defgeneric cost (searchable-edge)
-  (:method-combination +))
+(defgeneric cost (searchable-edge))
 
 @export
 (defgeneric connect (searchable-node-from searchable-node-to))

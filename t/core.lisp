@@ -18,5 +18,5 @@
   (is (= (funcall 
 	  (heuristic-value-to
 	   (2d 10 10))
-	  (tree 3.0 nil (2d 6 7)))
+	   (2d 6 7 nil nil 3.0))
 	 8.0)))

@@ -15,15 +15,14 @@
 
 (defmethod draw ((n 2d-node))
   (match n
-    ((2d x y _)
+    ((2d x y)
      (arc x y 3 0 +2pi+)
      (fill-path))))
 
-(defun draw-path (tree)
-  (match tree
-    ((tree _ 
-	   (and parent (tree _ _ (2d x2 y2)))
-	   (and c1 (2d x1 y1)))
+(defun draw-path (node)
+  (match node
+    ((and c1 (2d x1 y1)
+	  (node _ (and parent (2d x2 y2)) _))
      (draw c1)
      (move-to x1 y1)
      (line-to x2 y2)

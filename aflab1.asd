@@ -30,7 +30,16 @@
                 ((:file :package)
 		 (:file :mixin)
 		 (:file :model)
-		 (:file :a*-search))))
+		 (:file :a*-search)
+
+		 (:module :8puzzle
+			  :serial :t
+			  :components
+			  ((:file :model)
+			   (:file :ops)))
+
+
+		 )))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

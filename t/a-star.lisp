@@ -66,5 +66,3 @@ Copyright (c) 2013 guicho ()
 	(save-png (asdf:system-relative-pathname
 		   :aflab1
 		   (format nil "result/~a.png" (now))))))))
-
-(run! :aflab1)

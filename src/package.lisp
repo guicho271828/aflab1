@@ -7,6 +7,7 @@
 (defpackage aflab1
   (:use :cl
 	:iterate
+	:alexandria
 	:anaphora
 	:guicho-utilities
 	:annot.class

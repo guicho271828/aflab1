@@ -12,40 +12,40 @@ Copyright (c) 2013 guicho ()
 
 (defvar *max* 300)
 (defparameter *sample-num* 55)
-(defparameter *samples*
-  (iter (repeat *sample-num*)
-	(collecting (2d (random *max*) (random *max*)))))
-
+(defparameter *samples* nil)
 (defparameter *edges* nil)
+(defparameter *max-edges-per-node* 3)
 
-(test connect-neighbors
-  (iter (for 2d in *samples*)
-	(iter (generate i below (+ 2 (random 1)))
-	      (for samples
-		   initially *samples*
-		   then (remove best samples))
-	      (for best = 
-		   (iter (for sample in samples)
-			 (finding
-			  sample
-			  minimizing
-			  (heuristic-cost-between 2d sample))))
-	      (unless best
-		(terminate))
-	      (when (< (length (edges best)) (* 2 3))
-		(push (connect 2d best) *edges*)
-		(push (connect best 2d) *edges*)
-		(next i))))
-  (pass))
+(defun make-samples ()
+  (setf *samples* nil)
+  (finishes
+    (iter (repeat *sample-num*)
+	  (push (2d (random *max*) (random *max*))
+		*samples*))))
 
-(defparameter *start* (random-elt *samples*))
-(defparameter *end* 
-  (iter (for candidate = (random-elt *samples*))
-	(if (eq *start* candidate)
-	    (next-iteration)
-	    (return candidate))))
+(defun connect-neighbors ()
+  (setf *edges* nil)
+  (finishes
+    (iter (for 2d in *samples*)
+	  (iter (generate i below (+ 2 (random 1)))
+		(for samples
+		     initially *samples*
+		     then (remove best samples))
+		(for best = 
+		     (iter (for sample in samples)
+			   (finding
+			    sample
+			    minimizing
+			    (heuristic-cost-between 2d sample))))
+		(unless best
+		  (terminate))
+		(when (< (length (edges best)) *max-edges-per-node*)
+		  (push (connect 2d best) *edges*)
+		  (next i))))))
 
 (test a*
+  (make-samples)
+  (connect-neighbors)
   (finishes
     (with-canvas (:width *max* :height *max*)
       (set-rgba-stroke 0 0 0 0.3)
@@ -54,15 +54,24 @@ Copyright (c) 2013 guicho ()
       (mapcar #'draw *samples*)
       (mapcar #'draw *edges*)
       (unwind-protect
-	  (let ((last (a*-search *start* *end*)))
-	    (with-graphics-state
-	      (set-rgba-fill 1 0 0 0.7)
-	      (set-rgba-stroke 1 0 0 0.7)
-	      (draw-path last)))
+	   (let* ((start (random-elt *samples*))
+		  (end  (iter (for candidate = (random-elt *samples*))
+			      (if (eq start candidate)
+				  (next-iteration)
+				  (return candidate))))
+		  (last (a*-search start end)))
+	     (with-graphics-state
+	       (set-rgba-fill 1 0 0 0.7)
+	       (set-rgba-stroke 1 0 0 0.7)
+	       (draw start)
+	       (draw end)
+	       (set-rgba-fill 1 1 0 0.7)
+	       (set-rgba-stroke 1 1 0 0.7)
+	       (draw-path last)))
 	(ensure-directories-exist
 	 (asdf:system-relative-pathname
-		   :aflab1
-		   "result/"))
+	  :aflab1
+	  "result/"))
 	(save-png (asdf:system-relative-pathname
 		   :aflab1
 		   (format nil "result/~a.png" (now))))))))

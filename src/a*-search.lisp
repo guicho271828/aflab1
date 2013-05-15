@@ -1,6 +1,6 @@
 (in-package :aflab1)
-;;(speed*)
-(optimize*)
+(speed*)
+;; (optimize*)
 (cl-syntax:use-syntax :annot)
 
 @export
@@ -22,6 +22,7 @@
 
 @export
 (defun a*-search (start end)
+  (declare (optimize (debug 3)))
   (%a*-rec end (list start) nil 
 	   (heuristic-value-to end)))
 
@@ -29,7 +30,7 @@
 
 (defun %a*-rec (end open closed h)
   (if-let ((node (findmin open :key h)))
-    (if (eq node end)
+    (if (generic-eq node end)
 	node
 	(%iter-edge end
 		    (remove node open)
@@ -41,7 +42,8 @@
   (if (null edges)
       (%a*-rec end open closed h)
       (ematch edges
-	((list* (and e (edge _ neighbor)) rest)
+	((list* (and e (or (edge (eq now) neighbor)
+			   (edge neighbor (eq now)))) rest)
 	 (let ((cost (+ (cost now) (cost e)
 			(heuristic-cost-between neighbor end))))
 	   (cond

@@ -10,9 +10,10 @@ also, it must provide an accessor EDGES."
 (defclass searchable-node () 
   ((edges :accessor edges :initarg :edges)
    (cost :accessor cost :initarg :cost :type number
-	 :initform MOST-POSITIVE-FIXNUM)
-   (parent :accessor parent :initarg :parent :type searchable-node)))
-
+	 :initform 0)
+   (parent :accessor parent
+	   :initarg :parent
+	   :initform nil)))
 
 @export
 (defun node (edges parent cost)
@@ -44,9 +45,13 @@ searching. any subclass of `searchable-edge' should implement a method
 @doc "gives the cost between the two nodes. "
 (defgeneric heuristic-cost-between
 	(searchable-node-from searchable-node-to))
+
 @export
 @doc "gives the real cost of an edge. it has `+' method combination."
 (defgeneric cost (searchable-edge))
 
 @export
 (defgeneric connect (searchable-node-from searchable-node-to))
+
+@export
+(defgeneric generic-eq (thing1 thing2))

@@ -21,9 +21,8 @@
 
 (defun draw-path (node)
   (match node
-    ((and c1 (2d x1 y1)
+    ((and (2d x1 y1)
 	  (node _ (and parent (2d x2 y2)) _))
-     (draw c1)
      (move-to x1 y1)
      (line-to x2 y2)
      (stroke)

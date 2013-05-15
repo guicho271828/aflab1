@@ -3,48 +3,82 @@
 (def-suite :8puzzle :in :aflab1)
 (in-suite :8puzzle)
 
-(test generate-nodes
-  (is (= (length
+(test :generate-nodes
+  (is (= 2
+	 (length
 	  (generate-nodes
-	   (8puzzle (vector 0 1 2 3 4 5 6 7 8) 0)))
-	 2))
-  (is (= (length
-	  (edges
-	   (8puzzle (vector 4 1 2 3 0 5 6 7 8) 0)))
-	 4)))
+	   (8puzzle +goal-state+ 0)))))
+  (is (= 4
+  	 (length
+  	  (edges
+  	   (8puzzle (vector 4 1 2 3 0 5 6 7 8) 4))))))
 
-(test make-instance
-  (is (eq (class-of (8puzzle (vector 0 1 2 3 4 5 6 7 8) 0
-			     'dijkstra-8puzzle))
-	  (find-class 'dijkstra-8puzzle)))
-  (is (eq (class-of 
+(test :make-instance
+  (is (eq (find-class 'dijkstra-8puzzle)
+	  (class-of (8puzzle +goal-state+ 0 'dijkstra-8puzzle))))
+  (is (eq (find-class 'diff-8puzzle)
+	  (class-of 
 	   (random-elt
 	    (generate-nodes
-	     (8puzzle (vector 0 1 2 3 4 5 6 7 8) 0
-		      'diff-8puzzle))))
-	  (find-class 'diff-8puzzle))))
+	     (8puzzle +goal-state+ 0
+		      'diff-8puzzle)))))))
+
 
 (defun move-random (8p)
   (random-elt (generate-nodes 8p)))
 
+(test :dijkstra
+  (let ((goal (8puzzle +goal-state+ 0 'dijkstra-8puzzle)))
+    (is (zerop (heuristic-cost-between
+		goal
+		(move-random goal))))))
+(test :diff
+  (let ((goal (8puzzle +goal-state+ 0 'diff-8puzzle)))
+    (is (= 2 (heuristic-cost-between
+	      goal
+	      (move-random goal))))))
+(test :manhattan
+  (let ((goal (8puzzle +goal-state+ 0 'manhattan-8puzzle)))
+    (is (= 2 (heuristic-cost-between
+	      goal
+	      (move-random goal))))))
+
+(defparameter *random-move* 15)
+
 (defun make-problem (start)
   (let ((end start))
-    (iter (repeat 100)
+    (iter (repeat *random-move*)
 	  (setf start (move-random start)))
     (list start end)))
 
+(test :make-problem
+  (finishes
+    (make-problem
+     (8puzzle (vector 0 1 2 3 4 5 6 7 8) 0
+	      'dijkstra-8puzzle))))
+
+(defparameter *repeat* 100)
+
 (defun solve-puzzle (class)
   (let ((args (make-problem
-		(8puzzle (vector 0 1 2 3 4 5 6 7 8) 0
-			 class))))
-    (pass)
-    (finishes
-     (time
-      (apply a*-search args)))))
+	       (8puzzle (vector 0 1 2 3 4 5 6 7 8) 0
+			class))))
+    (apply #'a*-search args)))
 
-(test solve-dijkstra-8puzzle
-      (solve-puzzle 'dijkstra-8puzzle))
-(test solve-diff-8puzzle
-      (solve-puzzle 'diff-8puzzle))
 (test solve-manhattan-8puzzle
-      (solve-puzzle 'manhattan-8puzzle))
+  (time
+   (iter (repeat *repeat*)
+	 (finishes
+	   (solve-puzzle 'manhattan-8puzzle)))))
+(test solve-diff-8puzzle
+  (time
+   (iter (repeat *repeat*)
+	 (finishes
+	   (solve-puzzle 'diff-8puzzle)))))
+
+;; bad performance
+(test solve-dijkstra-8puzzle
+  (time
+   (iter (repeat 1)
+	 (finishes
+	   (solve-puzzle 'dijkstra-8puzzle)))))

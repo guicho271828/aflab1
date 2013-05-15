@@ -8,6 +8,10 @@
   ((x :accessor x :initarg :x :type number)
    (y :accessor y :initarg :y :type number)))
 
+(defmethod generic-eq ((n1 2d-node) (n2 2d-node))
+  (and (= (x n1) (x n2))
+       (= (y n1) (y n2))))
+
 @export
 (defun 2d (x y &optional edges parent (cost MOST-POSITIVE-FIXNUM))
   (make-instance '2d-node

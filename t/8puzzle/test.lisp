@@ -43,12 +43,18 @@
 	      goal
 	      (move-random goal))))))
 
-(defparameter *random-move* 15)
+(defparameter *random-move* 9)
 
 (defun make-problem (start)
   (let ((end start))
-    (iter (repeat *random-move*)
-	  (setf start (move-random start)))
+    (iter (with prev = nil)
+	  (generate i below *random-move*)
+	  (for candidate = (move-random start))
+	  (when (and prev (generic-eq prev candidate))
+	    (next-iteration))
+	  (setf prev start)
+	  (setf start candidate)
+	  (next i))
     (list start end)))
 
 (test :make-problem
@@ -66,19 +72,22 @@
     (apply #'a*-search args)))
 
 (test solve-manhattan-8puzzle
+  (print :manhattan)
   (time
    (iter (repeat *repeat*)
 	 (finishes
 	   (solve-puzzle 'manhattan-8puzzle)))))
 (test solve-diff-8puzzle
+  (print :diff)
   (time
    (iter (repeat *repeat*)
 	 (finishes
 	   (solve-puzzle 'diff-8puzzle)))))
 
 ;; bad performance
-(test solve-dijkstra-8puzzle
-  (time
-   (iter (repeat 1)
-	 (finishes
-	   (solve-puzzle 'dijkstra-8puzzle)))))
+;; (test solve-dijkstra-8puzzle
+;;   (setf *random-move* 5)
+;;   (time
+;;    (iter (repeat 1)
+;; 	 (finishes
+;; 	   (solve-puzzle 'dijkstra-8puzzle)))))

@@ -2,6 +2,7 @@
 (in-package :cl-user)
 (defpackage aflab1-test
   (:use :cl
+	:guicho-a*
         :aflab1
 	:alexandria
 	:iterate

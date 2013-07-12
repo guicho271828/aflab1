@@ -13,7 +13,12 @@ also, it must provide an accessor EDGES."
 	 :initform 0)
    (parent :accessor parent
 	   :initarg :parent
-	   :initform nil)))
+	   :initform nil)
+   (complementary-edge-class
+    :allocation :class
+    :reader complementary-edge-class
+    :initarg :complementary-edge-class
+    :initform (find-class 'searchable-edge))))
 
 @export
 (defun node (edges parent cost)
@@ -30,7 +35,12 @@ searching. any subclass of `searchable-edge' should implement a method
 `searchable-node' instance."
 (defclass searchable-edge ()
   ((to :accessor edge-to :initarg :to)
-   (from :accessor edge-from :initarg :from)))
+   (from :accessor edge-from :initarg :from)
+   (complementary-node-class
+    :allocation :class
+    :reader complementary-node-class
+    :initarg :complementary-node-class
+    :initform (find-class 'searchable-node))))
 
 @export
 (defun edge (from to)
@@ -52,6 +62,25 @@ searching. any subclass of `searchable-edge' should implement a method
 
 @export
 (defgeneric connect (searchable-node-from searchable-node-to))
+
+(defmethod connect ((from searchable-node) (to searchable-node))
+  (let ((e (make-instance (complementary-edge-class from)
+			  :from from :to to)))
+    (push e (edges from))
+    e))
+
+@export
+(defclass searchable-bidirectional-node (searchable-node)
+  ())
+
+(defmethod connect ((from searchable-bidirectional-node)
+		    (to searchable-bidirectional-node))
+  (let ((e (make-instance (complementary-edge-class from)
+			  :from from :to to)))
+    (push e (edges from))
+    (push e (edges to))
+    e))
+
 
 @export
 (defgeneric generic-eq (thing1 thing2))

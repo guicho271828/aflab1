@@ -29,8 +29,9 @@
                 :components
                 ((:file :package)
 		 (:file :mixin)
-		 (:file :model)
 		 (:file :a*-search)
+		 
+		 (:file :model)
 
 		 (:module :8puzzle
 			  :serial :t

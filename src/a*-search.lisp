@@ -1,4 +1,4 @@
-(in-package :aflab1)
+(in-package :guicho-a*)
 (speed*)
 ;; (optimize*)
 (cl-syntax:use-syntax :annot)

@@ -1,5 +1,5 @@
 
-(in-package :aflab1)
+(in-package :guicho-a*)
 (cl-syntax:use-syntax :annot)
 
 @export

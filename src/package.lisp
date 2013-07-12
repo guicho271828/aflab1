@@ -4,8 +4,21 @@
 |#
 
 (in-package :cl-user)
+
+(defpackage guicho-a*
+  (:use :cl
+	:iterate
+	:alexandria
+	:anaphora
+	:guicho-utilities
+	:annot.class
+	:annot.doc
+	:optima
+	:optima.extra))
+
 (defpackage aflab1
   (:use :cl
+	:guicho-a*
 	:iterate
 	:alexandria
 	:anaphora

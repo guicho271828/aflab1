@@ -1,12 +1,12 @@
 #|
-  This file is a part of aflab1 project.
-  Copyright (c) 2013 guicho ()
+This file is a part of aflab1 project.
+Copyright (c) 2013 guicho ()
 |#
 
 #|
-  
 
-  Author: guicho ()
+
+Author: guicho ()
 |#
 
 (in-package :cl-user)
@@ -19,28 +19,29 @@
   :author "guicho"
   :license "LLGPL"
   :depends-on (:iterate
-               :alexandria
-               :cl-annot
-	       :guicho-utilities
-	       :cl-syntax-annot
-               :anaphora)
+		:optima
+		:alexandria
+		:cl-annot
+		:guicho-utilities
+		:cl-syntax-annot
+		:anaphora)
   :components ((:module "src"
-		:serial t
-                :components
-                ((:file :package)
-		 (:file :mixin)
-		 (:file :a*-search)
-		 
-		 (:file :model)
+			:serial t
+			:components
+			((:file :package)
+			 (:file :mixin)
+			 (:file :a*-search)
+			 
+			 (:file :model)
 
-		 (:module :8puzzle
-			  :serial :t
-			  :components
-			  ((:file :model)
-			   (:file :ops)))
+			 (:module :8puzzle
+				  :serial :t
+				  :components
+				  ((:file :model)
+				   (:file :ops)))
 
 
-		 )))
+			 )))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

@@ -11,6 +11,7 @@
 	:alexandria
 	:anaphora
 	:guicho-utilities
+	:annot
 	:annot.class
 	:annot.doc
 	:optima
@@ -23,6 +24,7 @@
 	:alexandria
 	:anaphora
 	:guicho-utilities
+	:annot
 	:annot.class
 	:annot.doc
 	:optima

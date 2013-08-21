@@ -8,7 +8,7 @@
 `searchable-node' should implement a method HEURISTIC-COST-BETWEEN.
 also, it must provide an accessor EDGES."
 (defclass searchable-node () 
-  ((edges :accessor edges :initarg :edges)
+  ((edges :accessor edges :initarg :edges :initform nil)
    (cost :accessor cost :initarg :cost :type number
 	 :initform 0)
    (parent :accessor parent
@@ -18,7 +18,7 @@ also, it must provide an accessor EDGES."
     :allocation :class
     :reader complementary-edge-class
     :initarg :complementary-edge-class
-    :initform (find-class 'searchable-edge))))
+    :initform 'searchable-edge)))
 
 @export
 (defun node (edges parent cost)
@@ -40,7 +40,7 @@ searching. any subclass of `searchable-edge' should implement a method
     :allocation :class
     :reader complementary-node-class
     :initarg :complementary-node-class
-    :initform (find-class 'searchable-node))))
+    :initform 'searchable-node)))
 
 @export
 (defun edge (from to)

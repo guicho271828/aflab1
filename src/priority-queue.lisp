@@ -1,6 +1,6 @@
 (in-package :guicho-a*)
-;; (speed*)
-(optimize*)
+(speed*)
+;; (optimize*)
 (cl-syntax:use-syntax :annot)
 
 

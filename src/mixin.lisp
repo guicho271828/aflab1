@@ -7,7 +7,16 @@
 @doc "a node used in lrta*/rta* searching. any subclass of
 `searchable-node' should implement a method HEURISTIC-COST-BETWEEN.
 also, it must provide an accessor EDGES, which returns its edges stored
-in the slot, or the edges newly created in each call."
+in the slot, or the edges newly created in each call.
+
+By default, a call to SLOT-UNBOUND with its third argument EDGES will 
+call GENERATE-NODES, connect the nodes to itself and
+ finally return the edges. It would be necessary to warn that
+if GENERATE-NODES allows many duplicated instances in the meaning of
+GENERIC-EQ, then the heap exhaust may occur. Users should manually
+check for the duplicates in a way that fits to the structure
+ of the instance.
+"
 (defclass searchable-node () 
   ((edges :accessor edges :initarg :edges)
    (cost :accessor cost :initarg :cost :type number

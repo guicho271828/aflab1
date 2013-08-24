@@ -30,6 +30,7 @@ Author: guicho ()
 			:components
 			((:file :package)
 			 (:file :mixin)
+			 (:file :rb-tree)
 			 (:file :a*-search)
 			 
 			 (:file :model)

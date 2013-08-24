@@ -31,6 +31,7 @@ Author: guicho ()
 			((:file :package)
 			 (:file :mixin)
 			 (:file :rb-tree)
+			 (:file :priority-queue)
 			 (:file :a*-search)
 			 
 			 (:file :model)

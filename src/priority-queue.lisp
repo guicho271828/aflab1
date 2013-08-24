@@ -14,9 +14,12 @@
 	     (append things (rb-member priority queue))))
 
 (defun insert-queue (priority thing queue)
-  (rb-insert queue priority
-	     (cons thing (rb-member priority queue))))
+  (if-let ((node (rb-member-node priority queue)))
+    (progn (push thing (red-black-node-content node))
+	   queue)
+    (rb-insert queue priority (list thing))))
 
 (defun remove-queue (priority thing queue)
-  (rb-insert queue priority
-	     (remove thing (rb-member priority queue))))
+  (when-let ((node (rb-member-node priority queue)))
+    (removef (red-black-node-content node) thing))
+  queue)

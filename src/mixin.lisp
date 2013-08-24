@@ -11,7 +11,7 @@ in the slot, or the edges newly created in each call."
 (defclass searchable-node () 
   ((edges :accessor edges :initarg :edges)
    (cost :accessor cost :initarg :cost :type number
-	 :initform 0)
+	 :initform 0) ;  MOST-POSITIVE-DOUBLE-FLOAT
    (parent :accessor parent
 	   :initarg :parent
 	   :initform nil)
@@ -33,10 +33,8 @@ in the slot, or the edges newly created in each call."
        (connect node new))
      (generate-nodes node))))
 
-@export
-(defun node (edges parent cost)
-  (make-instance 'searchable-node
-		 :edges edges :parent parent :cost cost))
+@export '(node edge)
+
 (defpattern node (edges parent cost)
   `(class searchable-node
 	  (edges ,edges) (parent ,parent)
@@ -58,13 +56,8 @@ searching. any subclass of `searchable-edge' should implement a method
 (defmethod print-object ((e searchable-edge) s)
   (print-unreadable-object (e s :type t)
     (with-slots (to from) e
-      (format s "~w -> ~w" from to))))
+      (format s "~w ~:@_ → ~:@_ ~w" from to))))
 
-@export
-(defun edge (from to)
-  (%edge 'searchable-edge from to))
-(defun %edge (class from to)
-  (make-instance class :from from :to to))
 (defpattern edge (from to)
   `(class searchable-edge (to ,to) (from ,from)))
 

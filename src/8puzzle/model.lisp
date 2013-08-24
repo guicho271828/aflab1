@@ -8,7 +8,8 @@
 @export
 @export-accessors
 (defclass 8puzzle-node (searchable-node)
-  ((state :accessor state :initarg :state
+  ((complementary-edge-class :initform '8puzzle-edge)
+   (state :accessor state :initarg :state
 	  :type (simple-array fixnum 9))
    (pos :accessor pos :type :fixnum :initarg :position)))
 
@@ -50,12 +51,8 @@
 	       (coerce state 'list) cost)))))
 
 @export
-(defclass 8puzzle-edge (searchable-edge) ())
-(defun 8puzzle-edge (from to)
-  (%edge '8puzzle-edge from to))
-
-(defmethod connect ((from 8puzzle-node) (to 8puzzle-node))
-  (8puzzle-edge to from))
+(defclass 8puzzle-edge (searchable-edge)
+  ((complementary-node-class :initform '8puzzle-node)))
 
 (defmethod cost ((e 8puzzle-edge))
   1)

@@ -1,6 +1,6 @@
 (in-package :guicho-a*)
-(speed*)
-;; (optimize*)
+;; (speed*)
+(optimize*)
 (cl-syntax:use-syntax :annot)
 
 ; red-black-tree
@@ -15,6 +15,15 @@
   (label 0 :type number)
   content
   right)
+
+(defmethod print-object ((o leaf) s)
+  (format s "LEAF"))
+
+(defmethod print-object ((o red-black-node) s)
+  (match o
+    ((rb-node color left label content right)
+     (write (list color label content
+		  left right) :stream s))))
 
 (defpattern rb-node (color left label content right)
   `(red-black-node (color ,color)
@@ -33,12 +42,22 @@
   `(rb-node :black ,left ,label ,content ,right))
 
 (defun rb-member (x tree)
+  (when-let ((node (rb-member-node x tree)))
+    (red-black-node-content node)))
+
+;; (defun (setf rb-member) (new-value x tree)
+;;   (if-let ((node (rb-member-node x tree)))
+;;     (setf (red-black-node-content node)
+;; 	  new-value)
+;;     (rb-insert tree x new-value)))
+
+(defun rb-member-node (x tree)
   (match tree
     ((leaf) nil)
-    ((rb-node _ left label content right)
-     (cond ((< x label) (rb-member x left))
-           ((> x label) (rb-member x right))
-           (t           content)))))
+    ((rb-node _ left label _ right)
+     (cond ((< x label) (rb-member-node x left))
+           ((> x label) (rb-member-node x right))
+           (t           tree)))))
 
 (defun balance (tree)
   (match tree
@@ -73,16 +92,17 @@
     ((rb-node _ _ label content _)
      (values content label))))
 
-(defun rb-insert (tree x &optional xc)
+(defun rb-insert (tree x &optional (xc x))
   (labels ((ins (tree)
 	     (match tree
 	       ((leaf) (red (leaf) x xc (leaf)))
 	       ((rb-node color left label content right)
-		(cond ((< x label)
-		       (balance (rb-node color (ins left) label content right)))
-		      ((> x label)
-		       (balance (rb-node color left label content (ins right))))
-		      (t (rb-node color left label xc right)))))))
+		(cond
+		  ((< x label)
+		   (balance (rb-node color (ins left) label content right)))
+		  ((> x label)
+		   (balance (rb-node color left label content (ins right))))
+		  (t (rb-node color left label xc right)))))))
     (match (ins tree)
       ((rb-node _ left label content right)
        (black left label content right)))))

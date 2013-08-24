@@ -16,9 +16,15 @@
 
 @export
 (defun heuristic-value-to (end)
-  (lambda (node)
-    (+ (cost node)
-       (heuristic-cost-between node end))))
+  (let ((cost 0))
+    (lambda (node)
+      (let ((new-cost
+	     (+ (cost node)
+		(heuristic-cost-between node end))))
+	(when (< cost new-cost)
+	  (format t "~%opened f^*(n) = ~a" new-cost)
+	  (setf cost new-cost))
+	new-cost))))
 
 @export
 (defun a*-search (start end)
@@ -28,6 +34,14 @@
 
 ;; fully tail-recursive
 
+@export
+(define-condition path-not-found (error)
+  ()
+  (:report
+   (lambda (c s)
+     @ignore c
+     (format s "a*-search: there is no possible path!"))))
+
 (defun %a*-rec (end open closed h)
   (if-let ((node (findmin open :key h)))
     (if (generic-eq node end)
@@ -36,7 +50,7 @@
 		    (remove node open)
 		    (cons node closed)
 		    h node (edges node)))
-    (error "there is no possible path!")))
+    (error 'path-not-found)))
 
 (defun %iter-edge (end open closed h now edges)
   (if (null edges)

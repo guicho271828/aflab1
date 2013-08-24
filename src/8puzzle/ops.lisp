@@ -28,9 +28,6 @@
   (op left -1)
   (op right 1))
 
-@export
-(defgeneric generate-nodes (searchable-node))
-
 (defmethod generate-nodes ((8p 8puzzle-node))
   (ematch 8p
     ((8puzzle _ pos)

@@ -6,9 +6,10 @@
 @export-accessors
 @doc "a node used in lrta*/rta* searching. any subclass of
 `searchable-node' should implement a method HEURISTIC-COST-BETWEEN.
-also, it must provide an accessor EDGES."
+also, it must provide an accessor EDGES, which returns its edges stored
+in the slot, or the edges newly created in each call."
 (defclass searchable-node () 
-  ((edges :accessor edges :initarg :edges :initform nil)
+  ((edges :accessor edges :initarg :edges)
    (cost :accessor cost :initarg :cost :type number
 	 :initform 0)
    (parent :accessor parent
@@ -19,6 +20,18 @@ also, it must provide an accessor EDGES."
     :reader complementary-edge-class
     :initarg :complementary-edge-class
     :initform 'searchable-edge)))
+
+@export
+(defgeneric generate-nodes (searchable-node))
+
+(defmethod slot-unbound (class (node searchable-node)
+			 (slot (eql 'edges)))
+  (with-slots (edges) node
+    (setf edges nil)
+    (mapcar
+     (lambda (new)
+       (connect node new))
+     (generate-nodes node))))
 
 @export
 (defun node (edges parent cost)
@@ -41,6 +54,11 @@ searching. any subclass of `searchable-edge' should implement a method
     :reader complementary-node-class
     :initarg :complementary-node-class
     :initform 'searchable-node)))
+
+(defmethod print-object ((e searchable-edge) s)
+  (print-unreadable-object (e s :type t)
+    (with-slots (to from) e
+      (format s "~w -> ~w" from to))))
 
 @export
 (defun edge (from to)

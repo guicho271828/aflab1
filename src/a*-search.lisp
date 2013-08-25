@@ -69,7 +69,8 @@
 		(new-g* (+ (cost now) (cost e)))
 		(new-f* (+ h new-g*)))
 	   (cond
-	     ((find neighbor (rb-member old-f* open))
+	     ((find neighbor (rb-member old-f* open)
+		    :test #'generic-eq)
 	      (if (< new-g* old-g*) ; f'(m) < f*(m)
 		  (progn
 		    (setf (cost neighbor) new-g*
@@ -83,7 +84,8 @@
 		     closed now rest)
 		    (%iter-edge end open closed now rest))))
 	     
-	     ((find neighbor (rb-member old-f* closed))
+	     ((find neighbor (rb-member old-f* closed)
+		    :test #'generic-eq)
 	      (if (< new-g* old-g*)
 		  (progn
 		    (setf (cost neighbor) new-g*

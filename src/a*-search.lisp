@@ -28,7 +28,7 @@
 (defun a*-search (start end)
   (declare (optimize (debug 3)))
   (let ((*minimum-f* (heuristic-cost-between start end)))
-    (format t "~%~w : opened f^*(n) = ~a" start *minimum-f*)
+    (format t "~_~w : opened f^*(n) = ~a" start *minimum-f*)
     (%a*-rec end
 	     (rb-insert (leaf)
 			 *minimum-f*

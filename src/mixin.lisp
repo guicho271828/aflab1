@@ -104,3 +104,8 @@ searching. any subclass of `searchable-edge' should implement a method
 
 @export
 (defgeneric generic-eq (thing1 thing2))
+
+@export
+(defgeneric constraint-ordering-op (node)
+  (:method (node)
+    0))

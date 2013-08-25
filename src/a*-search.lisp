@@ -27,10 +27,11 @@
 @export
 (defun a*-search (start end)
   (declare (optimize (debug 3)))
-  (let ((*minimum-f* MOST-NEGATIVE-DOUBLE-FLOAT))
+  (let ((*minimum-f* (heuristic-cost-between start end)))
+    (format t "~%~w : opened f^*(n) = ~a" start *minimum-f*)
     (%a*-rec end
 	     (rb-insert (leaf)
-			(heuristic-cost-between start end)
+			 *minimum-f*
 			; f*(s) = 0 + h*(s)
 			(list start))
 	     (leaf))))
@@ -41,16 +42,19 @@
   (match (rb-minimum-node open)
     ((rb-node _ _ _ nil _)
      (%a*-rec end (rb-remove-minimum-node open) closed))
-    ((rb-node _ _ cost (list* now rest) _)
-     (when (< *minimum-f* cost)
-       (format t "~%opened f^*(n) = ~a" cost)
-       (setf *minimum-f* cost))
-     (if (generic-eq now end)
-	 now
-	 (%iter-edge end
-		     (rb-insert open cost rest)
-		     (insert-queue cost now closed)
-		     now (edges now))))
+    ((rb-node _ _ f* list _)
+     (destructuring-bind (now . rest)
+	 (sort list #'< :key #'constraint-ordering-op)
+       (if (generic-eq now end)
+	   now
+	   (progn
+	     (when (< *minimum-f* f*)
+	       (format t ", ~a" f*)
+	       (setf *minimum-f* f*))
+	     (%iter-edge end
+			 (rb-insert open f* rest)
+			 (insert-queue f* now closed)
+			 now (edges now))))))
     (_ (error 'path-not-found))))
 
 (defun %iter-edge (end open closed now edges)
@@ -60,38 +64,41 @@
 	((list* (and e (or (edge (eq now) neighbor)
 			   (edge neighbor (eq now)))) rest)
 	 (let* ((h (heuristic-cost-between neighbor end))
-					; h*(m)
-		(old-cost (+ (cost neighbor) h))
-					; f*(m) = g*(m) + h*(m)
-		(cost (+ (cost now) (cost e) h)))
-					; f'(m) = g*(n) + cost(n,m) + h*(m)
+		(old-g* (cost neighbor))
+		(old-f* (+ h old-g*))
+		(new-g* (+ (cost now) (cost e)))
+		(new-f* (+ h new-g*)))
 	   (cond
-	     ((find neighbor (rb-member old-cost open))
-	      (if (< cost old-cost) ; f'(m) < f*(m)
+	     ((find neighbor (rb-member old-f* open))
+	      (if (< new-g* old-g*) ; f'(m) < f*(m)
 		  (progn
-		    (setf (cost neighbor) cost
+		    (setf (cost neighbor) new-g*
 			  (parent neighbor) now)
 		    (%iter-edge
 		     end
-		     (insert-queue cost neighbor
-				   (remove-queue old-cost neighbor open))
-		     closed now rest))
-		  (%iter-edge end open closed now rest)))
+		     (insert-queue
+		      new-f* neighbor
+		      (remove-queue
+		       old-f* neighbor open))
+		     closed now rest)
+		    (%iter-edge end open closed now rest))))
 	     
-	     ((find neighbor (rb-member old-cost closed))
-	      (if (< cost old-cost)
+	     ((find neighbor (rb-member old-f* closed))
+	      (if (< new-g* old-g*)
 		  (progn
-		    (setf (cost neighbor) cost
+		    (setf (cost neighbor) new-g*
 			  (parent neighbor) now)
-		    (%iter-edge end
-				(insert-queue cost neighbor open)
-				(remove-queue old-cost neighbor closed)
-				now rest))
+		    (let ()
+		      (%iter-edge
+		       end
+		       (insert-queue new-f* neighbor open)
+		       (remove-queue old-f* neighbor closed)
+		       now rest)))
 		  (%iter-edge end open closed now rest)))
 
-	     (t (setf (cost neighbor) cost)
+	     (t (setf (cost neighbor) new-g*)
 		(setf (parent neighbor) now)
 		(%iter-edge
 		 end
-		 (insert-queue cost neighbor open)
+		 (insert-queue new-f* neighbor open)
 		 closed now rest))))))))

@@ -5,12 +5,22 @@
 
 (in-package :cl-user)
 
+(defpackage guicho-red-black-tree
+  (:use :cl
+	:alexandria
+	:guicho-utilities
+	:annot
+	:annot.class
+	:annot.doc
+	:optima))
+
 (defpackage guicho-a*
   (:use :cl
 	:iterate
 	:alexandria
 	:anaphora
 	:guicho-utilities
+	:guicho-red-black-tree
 	:annot
 	:annot.class
 	:annot.doc

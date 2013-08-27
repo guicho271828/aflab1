@@ -1,11 +1,14 @@
-(in-package :guicho-a*)
+(in-package :guicho-red-black-tree)
 (speed*)
 ;; (optimize*)
 (cl-syntax:use-syntax :annot)
 
 ; red-black-tree
 
+@export
 (defstruct (leaf (:constructor leaf)))
+
+@export
 (defstruct (red-black-node
 	     (:constructor
 	      rb-node
@@ -15,6 +18,13 @@
   (label 0 :type number)
   content
   right)
+
+(export '(rb-node
+	  red-black-node-color
+	  red-black-node-left
+	  red-black-node-label
+	  red-black-node-content
+	  red-black-node-right))
 
 (defmethod print-object ((o leaf) s)
   (format s "LEAF"))
@@ -32,8 +42,10 @@
 		   (content ,content)
 		   (right ,right)))
 
+@export
 (defun red (left label content right)
   (rb-node :red left label content right))
+@export
 (defun black (left label content right)
   (rb-node :black left label content right))
 (defpattern red (left label content right)
@@ -41,6 +53,7 @@
 (defpattern black (left label content right)
   `(rb-node :black ,left ,label ,content ,right))
 
+@export
 (defun rb-member (x tree)
   (when-let ((node (rb-member-node x tree)))
     (red-black-node-content node)))
@@ -51,6 +64,7 @@
 ;; 	  new-value)
 ;;     (rb-insert tree x new-value)))
 
+@export
 (defun rb-member-node (x tree)
   (match tree
     ((leaf) nil)
@@ -59,6 +73,7 @@
            ((> x label) (rb-member-node x right))
            (t           tree)))))
 
+@export
 (defun balance (tree)
   (match tree
     ((or (black (red (red a x xc b) y yc c) z zc d)
@@ -68,6 +83,7 @@
      (red (black a x xc b) y yc (black c z zc d)))
     (otherwise tree)))
 
+@export
 (defun rb-minimum-node (tree)
   (match tree
     ((rb-node _ (leaf) _ _ _)
@@ -75,11 +91,13 @@
     ((rb-node _ left _ _ _)
      (rb-minimum-node left))))
 
+@export
 (defun rb-minimum (tree)
   (match (rb-minimum-node tree)
     ((rb-node _ _ label content _)
      (values content label))))
 
+@export
 (defun rb-maximum-node (tree)
   (match tree
     ((rb-node _ _ _ _ (leaf))
@@ -87,11 +105,13 @@
     ((rb-node _ _ _ _ right)
      (rb-maximum-node right))))
 
+@export
 (defun rb-maximum (tree)
   (match (rb-maximum-node tree)
     ((rb-node _ _ label content _)
      (values content label))))
 
+@export
 (defun rb-insert (tree x &optional (xc x))
   (labels ((ins (tree)
 	     (match tree
@@ -107,6 +127,7 @@
       ((rb-node _ left label content right)
        (black left label content right)))))
 
+@export
 (defun rb-remove-minimum-node (tree)
   (let (min-label min-content)
     (labels
@@ -123,6 +144,7 @@
 	      min-content
 	      min-label))))
 
+@export
 (defun rb-remove (tree x)
   (labels
       ((rec (tree)

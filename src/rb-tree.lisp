@@ -5,10 +5,12 @@
 
 ; red-black-tree
 
-@export
+@export 'leaf
+
 (defstruct (leaf (:constructor leaf)))
 
-@export
+@export 'red-black-node
+
 (defstruct (red-black-node
 	     (:constructor
 	      rb-node

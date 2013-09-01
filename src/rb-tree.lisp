@@ -31,18 +31,18 @@
 (defmethod print-object ((o leaf) s)
   (format s "LEAF"))
 
-(defmethod print-object ((o red-black-node) s)
-  (match o
-    ((rb-node color left label content right)
-     (write (list color label content
-		  left right) :stream s))))
-
 (defpattern rb-node (color left label content right)
   `(red-black-node (color ,color)
 		   (left,left)
 		   (label ,label)
 		   (content ,content)
 		   (right ,right)))
+
+(defmethod print-object ((o red-black-node) s)
+  (match o
+    ((rb-node color left label content right)
+     (write (list color label content
+		  left right) :stream s))))
 
 @export
 (defun red (left label content right)

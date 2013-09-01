@@ -158,8 +158,8 @@
 		      new-f* neighbor
 		      (remove-queue
 		       old-f* neighbor open))
-		     closed now rest)
-		    (%iter-edge-silent end open closed now rest))))
+		     closed now rest))
+		  (%iter-edge-silent end open closed now rest)))
 	     
 	     ((find neighbor (rb-member old-f* closed)
 		    :test #'generic-eq)

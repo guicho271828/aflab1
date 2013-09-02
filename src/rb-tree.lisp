@@ -1,5 +1,5 @@
 (in-package :guicho-red-black-tree)
-(speed*)
+;; (speed*)
 ;; (optimize*)
 (cl-syntax:use-syntax :annot)
 

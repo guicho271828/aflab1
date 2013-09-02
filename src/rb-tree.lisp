@@ -252,6 +252,14 @@
 	      (_ tree)))
            (t
 	    (rb-maximum-node left))))))
+@export
+(defun rb-member-after (x tree)
+  (red-black-node-content
+   (rb-member-node-after x tree)))
+@export
+(defun rb-member-before (x tree)
+  (red-black-node-content
+   (rb-member-node-before x tree)))
 
 @export
 (defun rb-remove-after (tree x)

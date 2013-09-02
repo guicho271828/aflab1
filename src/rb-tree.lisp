@@ -208,3 +208,94 @@
 	(cond ((< x label) (%rb-node-previous-node-rec node left))
 	      ((> x label) (%rb-node-previous-node-rec node right))
 	      (t left)))))))
+
+@export
+(defun rb-member-node-after (x tree)
+  (match tree
+    ((leaf) tree)
+    ((rb-node _ left label _ right)
+     (cond ((< x label)
+	    (match (rb-maximum-node left)
+	      ((rb-node _ _ y _ _)
+	       (if (< y x)
+		   tree
+		   (rb-member-node-after x left)))
+	      (_ tree)))
+           ((< label x)
+	    (match (rb-minimum-node right)
+	      ((and min (rb-node _ _ y _ _))
+	       (if (< x y)
+		   min
+		   (rb-member-node-after x right)))
+	      (_ tree)))
+           (t
+	    (rb-minimum-node right))))))
+
+@export
+(defun rb-member-node-before (x tree)
+  (match tree
+    ((leaf) tree)
+    ((rb-node _ left label _ right)
+     (cond ((< x label)
+	    (match (rb-maximum-node left)
+	      ((and max (rb-node _ _ y _ _))
+	       (if (< y x)
+		   max
+		   (rb-member-node-before x left)))
+	      (_ tree)))
+           ((< label x)
+	    (match (rb-minimum-node right)
+	      ((rb-node _ _ y _ _)
+	       (if (< x y)
+		   tree
+		   (rb-member-node-before x right)))
+	      (_ tree)))
+           (t
+	    (rb-maximum-node left))))))
+
+@export
+(defun rb-remove-after (tree x)
+  (match tree
+    ((leaf) tree)
+    ((rb-node color left label content right)
+     (cond ((< x label)
+	    (match (rb-maximum-node left)
+	      ((rb-node _ _ y _ _)
+	       (if (< y x)
+		   left
+		   (rb-remove-after left x)))
+	      (_ (leaf))))
+           ((< label x)
+	    (match (rb-minimum-node right)
+	      ((rb-node _ _ y _ _)
+	       (if (< x y)
+		   (balance (rb-node color left label content (leaf)))
+		   (balance (rb-node color left label content 
+				     (rb-remove-after right x)))))
+	      (_ tree)))
+           (t
+	    (balance (rb-node color left label content (leaf))))))))
+
+@export
+(defun rb-remove-before (tree x)
+  (match tree
+    ((leaf) tree)
+    ((rb-node color left label content right)
+     (cond ((< x label)
+	    (match (rb-maximum-node left)
+	      ((rb-node _ _ y _ _)
+	       (if (< y x)
+		   (balance (rb-node color (leaf) label content right))
+		   (balance (rb-node color (rb-remove-before left x)
+				     label content right))))
+	      (_ (leaf))))
+           ((< label x)
+	    (match (rb-minimum-node right)
+	      ((rb-node _ _ y _ _)
+	       (if (< x y)
+		   right
+		   (rb-remove-before right x)))
+	      (_ tree)))
+           (t
+	    (balance (rb-node color (leaf) label content right)))))))
+     

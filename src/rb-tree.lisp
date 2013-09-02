@@ -164,3 +164,47 @@
     (match (rec tree)
       ((rb-node _ left y content right)
        (black left y content right)))))
+
+@export
+(defun rb-node-next-node (node tree)
+  (match node
+    ((rb-node _ _ _ _ (and right (type red-black-node)))
+     (rb-minimum-node right))
+    (_ (%rb-node-next-node-rec node tree))))
+
+(defun %rb-node-next-node-rec (node tree)
+  (match tree
+    ((leaf)
+     tree)
+    
+    ((rb-node _ (guard left (eq (rb-maximum-node left) node)) _ _ _)
+     tree)
+
+    ((rb-node _ left label _ right)
+     (match node
+       ((rb-node _ _ x _ _)
+	(cond ((< x label) (%rb-node-next-node-rec node left))
+	      ((> x label) (%rb-node-next-node-rec node right))
+	      (t right)))))))
+
+@export
+(defun rb-node-previous-node (node tree)
+  (match node
+    ((rb-node _ (and left (type red-black-node)) _ _ _)
+     (rb-maximum-node left))
+    (_ (%rb-node-previous-node-rec node tree))))
+
+(defun %rb-node-previous-node-rec (node tree)
+  (match tree
+    ((leaf)
+     tree)
+    
+    ((rb-node _ _ _ _ (guard right (eq (rb-minimum-node right) node)))
+     tree)
+
+    ((rb-node _ left label _ right)
+     (match node
+       ((rb-node _ _ x _ _)
+	(cond ((< x label) (%rb-node-previous-node-rec node left))
+	      ((> x label) (%rb-node-previous-node-rec node right))
+	      (t left)))))))

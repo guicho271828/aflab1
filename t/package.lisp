@@ -3,6 +3,7 @@
 (defpackage aflab1-test
   (:use :cl
 	:guicho-a*
+	:guicho-red-black-tree
         :aflab1
 	:alexandria
 	:iterate

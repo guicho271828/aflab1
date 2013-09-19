@@ -64,8 +64,8 @@
 	      'dijkstra-8puzzle))))
 
 (defun solve-puzzle (start-end &optional (verbose t))
-  (let (cost)
-    (handler-return
+  (let (cost lasts)
+    (handler-bind
         ((path-not-found
           (lambda (c)
             (declare (ignorable c))
@@ -79,14 +79,20 @@
                  (for parent first (parent last) then (parent parent))
                  (for node first last then (parent node))
                  (while parent)
-                 (collect (aref (state parent) (position 0 (state node)))))
+                 (collect (aref (state node) (position 0 (state parent)))
+                   at beginning))
                (cost last))
+              (push last lasts)
               (cond
                 ((null cost) (setf cost (cost last)) (continue))
                 ((= cost (cost last))
                  (continue))
                 ((< cost (cost last))
-                 (format t "~% Found all optimal paths. Search finished! ")))))))
+                 ;; (let ((lasts (reverse lasts)))
+                 ;;   (break+ lasts (eq (first lasts) (second lasts))))
+                 (format t "~% Found all optimal paths. Search finished!"))
+                (t
+                 (format t "~% What happened? ~%~w"  (reverse lasts))))))))
       (destructuring-bind (start end) start-end
         (funcall #'a*-search start end :verbose verbose)))))
 
@@ -100,14 +106,18 @@
   (print :manhattan)
   (time 
    (for-all ((start-end (problem-generator 'manhattan-8puzzle)))
+     (format t "~&verbose")
      (finishes (solve-puzzle start-end t))
+     (format t "~&silent")
      (finishes (solve-puzzle start-end nil)))))
 
 (test solve-diff-8puzzle
   (print :diff)
   (time
    (for-all ((start-end (problem-generator 'diff-8puzzle)))
+     (format t "~&verbose")
      (finishes (solve-puzzle start-end t))
+     (format t "~&silent")
      (finishes (solve-puzzle start-end nil)))))
 
 

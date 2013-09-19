@@ -1,5 +1,5 @@
 (in-package :guicho-red-black-tree)
-;; (speed*)
+(speed*)
 ;; (optimize*)
 (cl-syntax:use-syntax :annot)
 
@@ -15,7 +15,7 @@
 	     (:constructor
 	      rb-node
 	      (color left label content right)))
-  color
+  (color :red :type symbol)
   left
   (label 0 :type number)
   content
@@ -44,6 +44,8 @@
      (write (list color label content
 		  left right) :stream s))))
 
+(declaim (ftype (function (t number t t) red-black-node) red black))
+
 @export
 (defun red (left label content right)
   (rb-node :red left label content right))
@@ -54,6 +56,9 @@
   `(rb-node :red ,left ,label ,content ,right))
 (defpattern black (left label content right)
   `(rb-node :black ,left ,label ,content ,right))
+
+(declaim (ftype (function (number (or leaf red-black-node)) t) rb-member))
+(declaim (ftype (function (number (or leaf red-black-node)) (or null red-black-node)) rb-member-node))
 
 @export
 (defun rb-member (x tree)
@@ -75,6 +80,8 @@
            ((> x label) (rb-member-node x right))
            (t           tree)))))
 
+
+(declaim (ftype (function ((or red-black-node leaf)) (or red-black-node leaf)) balance))
 @export
 (defun balance (tree)
   (match tree
@@ -85,6 +92,10 @@
      (red (black a x xc b) y yc (black c z zc d)))
     (otherwise tree)))
 
+(declaim (ftype (function ((or red-black-node leaf)) (or null red-black-node))
+                rb-minimum-node rb-maximum-node))
+(declaim (ftype (function ((or red-black-node leaf)) t)
+                rb-minimum rb-maximum))
 @export
 (defun rb-minimum-node (tree)
   (match tree
@@ -113,6 +124,7 @@
     ((rb-node _ _ label content _)
      (values content label))))
 
+(declaim (ftype (function ((or leaf red-black-node) number &optional t) red-black-node) rb-insert))
 @export
 (defun rb-insert (tree x &optional (xc x))
   (labels ((ins (tree)
@@ -125,10 +137,13 @@
 		  ((> x label)
 		   (balance (rb-node color left label content (ins right))))
 		  (t (rb-node color left label xc right)))))))
+    (declare (ftype (function ((or leaf red-black-node)) red-black-node) ins))
     (match (ins tree)
       ((rb-node _ left label content right)
        (black left label content right)))))
 
+(declaim (ftype (function ((or leaf red-black-node)) (values (or leaf red-black-node) t number))
+                rb-remove-minimum-node))
 @export
 (defun rb-remove-minimum-node (tree)
   (let (min-label min-content)
@@ -146,12 +161,13 @@
 	      min-content
 	      min-label))))
 
+(declaim (ftype (function ((or leaf red-black-node) number) (or red-black-node leaf))
+                rb-remove))
 @export
 (defun rb-remove (tree x)
   (labels
       ((rec (tree)
 	 (match tree
-	   ((leaf) tree)
 	   ((rb-node color left (guard y (= y x)) _ right)
 	    (multiple-value-match (rb-remove-minimum-node right)
 	      ((subtree content label)
@@ -159,11 +175,18 @@
 		(rb-node color left label content subtree)))))
 	   ((rb-node color left y content right)
 	    (if (< x y)
-		(balance (rb-node color (rec left) y content right))
-		(balance (rb-node color left y content (rec right))))))))
-    (match (rec tree)
-      ((rb-node _ left y content right)
-       (black left y content right)))))
+                (if (typep left 'leaf)
+                    (balance (rb-node color left y content right))
+                    (balance (rb-node color (rec left) y content right)))
+                (if (typep right 'leaf)
+                    (balance (rb-node color left y content right))
+                    (balance (rb-node color left y content (rec right)))))))))
+    (declare (ftype (function (red-black-node) red-black-node) rec))
+    (if (typep tree 'leaf)
+        tree
+        (match (rec tree)
+          ((rb-node _ left y content right)
+           (black left y content right))))))
 
 @export
 (defun rb-node-next-node (node tree)

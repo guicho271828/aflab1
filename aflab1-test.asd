@@ -23,6 +23,7 @@
 		 (:file :drawer)
 		 (:file :core)
 		 (:file :a-star)
+                 (:file :regression-stack-exhanst)
 		 (:module :8puzzle
 			  :components
 			  ((:file :test))))))

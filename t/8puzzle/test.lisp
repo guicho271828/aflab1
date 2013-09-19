@@ -63,26 +63,53 @@
      (8puzzle (vector 0 1 2 3 4 5 6 7 8) 0
 	      'dijkstra-8puzzle))))
 
-(defparameter *repeat* 100)
+(defun solve-puzzle (start-end &optional (verbose t))
+  (let (cost)
+    (handler-return
+        ((path-not-found
+          (lambda (c)
+            (declare (ignorable c))
+            (format t "Completely searched the state space!")))
+         (solution-found
+          (lambda (c)
+            (let ((last (solution c)))
+              (format
+               t "~%Solution : ~w Cost : ~w"
+               (iter
+                 (for parent first (parent last) then (parent parent))
+                 (for node first last then (parent node))
+                 (while parent)
+                 (collect (aref (state parent) (position 0 (state node)))))
+               (cost last))
+              (cond
+                ((null cost) (setf cost (cost last)) (continue))
+                ((= cost (cost last))
+                 (continue))
+                ((< cost (cost last))
+                 (format t "~% Found all optimal paths. Search finished! ")))))))
+      (destructuring-bind (start end) start-end
+        (funcall #'a*-search start end :verbose verbose)))))
 
-(defun solve-puzzle (class)
-  (let ((args (make-problem
-	       (8puzzle (vector 0 1 2 3 4 5 6 7 8) 0
-			class))))
-    (apply #'a*-search args)))
+(defun problem-generator (class)
+  (lambda () 
+    (make-problem
+     (8puzzle (vector 0 1 2 3 4 5 6 7 8) 0
+              class))))
 
 (test solve-manhattan-8puzzle
   (print :manhattan)
-  (time
-   (iter (repeat *repeat*)
-	 (finishes
-	   (solve-puzzle 'manhattan-8puzzle)))))
+  (time 
+   (for-all ((start-end (problem-generator 'manhattan-8puzzle)))
+     (finishes (solve-puzzle start-end t))
+     (finishes (solve-puzzle start-end nil)))))
+
 (test solve-diff-8puzzle
   (print :diff)
   (time
-   (iter (repeat *repeat*)
-	 (finishes
-	   (solve-puzzle 'diff-8puzzle)))))
+   (for-all ((start-end (problem-generator 'diff-8puzzle)))
+     (finishes (solve-puzzle start-end t))
+     (finishes (solve-puzzle start-end nil)))))
+
 
 ;; bad performance
 ;; (test solve-dijkstra-8puzzle

@@ -15,7 +15,7 @@
 	  a*-tree-parent a*-tree-content)
 
 @export
-(define-condition path-not-found (error)
+(define-condition path-not-found (condition)
   ()
   (:report
    (lambda (c s)
@@ -25,6 +25,12 @@
 (defvar *minimum-f* nil)
 
 @export
+@doc "Conduct an A* search. signals solution-found (<< condition) when a solution is found,
+ or path-not-found (<< condition) otherwise. If the condition is not handled it normally
+ returns with the last node of the path, or nil when no solution was found.
+
+Condition `solution-found' is associated with  a `continue' restart, invoking of which
+lets the search continue for another solution."
 (defun a*-search (start end &key (verbose t))
   (if verbose
       (a*-search-verbose start end)
@@ -32,7 +38,7 @@
 
 (defun a*-search-verbose (start end)
   (let ((*minimum-f* (heuristic-cost-between start end)))
-    (format t "~%~w : opened f^*(n) = ~a" start *minimum-f*)
+    (format t "~2%~4tStart searching : ~w ~& minf* = ~a" start *minimum-f*)
     (%a*-rec end
 	     (rb-insert (leaf)
 			 *minimum-f*
@@ -42,6 +48,12 @@
 
 ;; fully tail-recursive
 
+@export 'solution
+
+@export
+(define-condition solution-found (condition)
+  ((solution :initarg :solution :accessor solution)))
+
 (defun %a*-rec (end open closed)
   (match (rb-minimum-node open)
     ((rb-node _ _ _ nil _)
@@ -49,17 +61,25 @@
     ((rb-node _ _ f* list _)
      (destructuring-bind (now . rest)
 	 (sort list #'< :key #'constraint-ordering-op)
-       (if (generic-eq now end)
-	   now
-	   (progn
-	     (when (< *minimum-f* f*)
-	       (format t ", ~a" f*)
-	       (setf *minimum-f* f*))
-	     (%iter-edge end
-			 (rb-insert open f* rest)
-			 (insert-queue f* now closed)
-			 now (edges now))))))
-    (_ (error 'path-not-found))))
+       (tagbody
+          (when (generic-eq now end)
+            (restart-bind ((continue
+                            (lambda ()
+                              (format t "~& Keep searching ...")
+                              (go continue))))
+              (format t "~& Solution found!")
+              (signal 'solution-found :solution now)
+              (return-from %a*-rec now)))
+          continue
+          (when (< *minimum-f* f*)
+            (format t "~& minf* = ~a" f*)
+            (setf *minimum-f* f*))
+          (return-from %a*-rec
+            (%iter-edge end
+                        (rb-insert open f* rest)
+                        (insert-queue f* now closed)
+                        now (edges now))))))
+    (_ (signal 'path-not-found))))
 
 (defun %iter-edge (end open closed now edges)
   (if (null edges)
@@ -126,13 +146,20 @@
     ((rb-node _ _ f* list _)
      (destructuring-bind (now . rest)
 	 (sort list #'< :key #'constraint-ordering-op)
-       (if (generic-eq now end)
-	   now
-	   (%iter-edge-silent end
-			      (rb-insert open f* rest)
-			      (insert-queue f* now closed)
-			      now (edges now)))))
-    (_ (error 'path-not-found))))
+       (tagbody
+          (when (generic-eq now end)
+            (restart-bind ((continue
+                            (lambda ()
+                              (go continue))))
+              (signal 'solution-found :solution now)
+              (return-from %a*-rec-silent now)))
+        continue
+          (return-from %a*-rec-silent
+            (%iter-edge-silent end
+                               (rb-insert open f* rest)
+                               (insert-queue f* now closed)
+                               now (edges now))))))
+    (_ (signal 'path-not-found))))
 
 (defun %iter-edge-silent (end open closed now edges)
   (if (null edges)

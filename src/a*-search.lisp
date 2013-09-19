@@ -61,24 +61,20 @@ lets the search continue for another solution."
     ((rb-node _ _ f* list _)
      (destructuring-bind (now . rest)
 	 (sort list #'< :key #'constraint-ordering-op)
-       (tagbody
-          (when (generic-eq now end)
-            (restart-bind ((continue
-                            (lambda ()
-                              (format t "~& Keep searching ...")
-                              (go continue))))
-              (format t "~& Solution found!")
-              (signal 'solution-found :solution now)
-              (return-from %a*-rec now)))
-          continue
-          (when (< *minimum-f* f*)
-            (format t "~& minf* = ~a" f*)
-            (setf *minimum-f* f*))
-          (return-from %a*-rec
-            (%iter-edge end
-                        (rb-insert open f* rest)
-                        (insert-queue f* now closed)
-                        now (edges now))))))
+       (when (generic-eq now end)
+         (restart-return ((continue
+                           (lambda ()
+                             (format t "~& Keep searching ..."))))
+           (format t "~& Solution found!")
+           (signal 'solution-found :solution now)
+           (return-from %a*-rec now)))
+       (when (< *minimum-f* f*)
+         (format t "~& minf* = ~a" f*)
+         (setf *minimum-f* f*))
+       (%iter-edge end
+                   (rb-insert open f* rest)
+                   (insert-queue f* now closed)
+                   now (edges now))))
     (_ (signal 'path-not-found))))
 
 (defun %iter-edge (end open closed now edges)
@@ -146,19 +142,16 @@ lets the search continue for another solution."
     ((rb-node _ _ f* list _)
      (destructuring-bind (now . rest)
 	 (sort list #'< :key #'constraint-ordering-op)
-       (tagbody
-          (when (generic-eq now end)
-            (restart-bind ((continue
-                            (lambda ()
-                              (go continue))))
-              (signal 'solution-found :solution now)
-              (return-from %a*-rec-silent now)))
-        continue
-          (return-from %a*-rec-silent
-            (%iter-edge-silent end
-                               (rb-insert open f* rest)
-                               (insert-queue f* now closed)
-                               now (edges now))))))
+       (when (generic-eq now end)
+         (restart-return ((continue
+                           (lambda ()
+                             nil)))
+           (signal 'solution-found :solution now)
+           (return-from %a*-rec-silent now)))
+       (%iter-edge-silent end
+                          (rb-insert open f* rest)
+                          (insert-queue f* now closed)
+                          now (edges now))))
     (_ (signal 'path-not-found))))
 
 (defun %iter-edge-silent (end open closed now edges)

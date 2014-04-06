@@ -3,6 +3,8 @@
 ;; (optimize*)
 (cl-syntax:use-syntax :annot)
 
+(defvar *print-lock* (make-lock "IO Stream lock"))
+
 ;; @export
 ;; (defun findmin (list &key (key #'identity))
 ;;   (iter (for elem in list)

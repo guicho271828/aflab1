@@ -23,7 +23,6 @@ Author: guicho ()
 		:alexandria
 		:cl-annot
 		:guicho-utilities
-                :guicho-utilities.threading
                 :bordeaux-threads
 		:cl-syntax-annot
 		:anaphora)

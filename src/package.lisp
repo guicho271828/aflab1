@@ -20,6 +20,8 @@
 	:alexandria
 	:anaphora
 	:guicho-utilities
+        :guicho-utilities.threading
+        :bordeaux-threads
 	:guicho-red-black-tree
 	:annot
 	:annot.class

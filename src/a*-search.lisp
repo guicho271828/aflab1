@@ -38,7 +38,10 @@ lets the search continue for another solution."
 
 (defun a*-search-verbose (start end)
   (let ((*minimum-f* (heuristic-cost-between start end)))
-    (format t "~2%~4tStart searching : ~w ~& minf* = ~a" start *minimum-f*)
+    (with-lock-held (*print-lock*)
+      (format *shared-output*
+              "~2%~4tStart searching : ~w ~& minf* = ~a"
+              start *minimum-f*))
     (%a*-rec end
 	     (rb-insert (leaf)
 			 *minimum-f*
@@ -64,12 +67,17 @@ lets the search continue for another solution."
        (when (generic-eq now end)
          (restart-return ((continue
                            (lambda ()
-                             (format t "~& Keep searching ..."))))
-           (format t "~& Solution found!")
+                             (with-lock-held (*print-lock*)
+                               (format *shared-output* "~& Keep searching ...")))))
+           (with-lock-held (*print-lock*)
+             (format *shared-output* "~& Solution found!"))
            (signal 'solution-found :solution now)
            (return-from %a*-rec now)))
        (when (< *minimum-f* f*)
-         (format t "~& minf* = ~a" f*)
+         (with-lock-held (*print-lock*)
+           (format *shared-output*
+                   "~& thread ~x: minf* = ~a"
+                   (position (current-thread) (all-threads)) f*))
          (setf *minimum-f* f*))
        (%iter-edge end
                    (rb-insert open f* rest)

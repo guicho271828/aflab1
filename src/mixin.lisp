@@ -18,63 +18,67 @@ check for the duplicates in a way that fits to the structure
  of the instance.
 "
 (defclass searchable-node () 
-  ((edges :accessor edges :initarg :edges)
-   (cost :accessor cost :initarg :cost :type number
-	 :initform 0) ;  MOST-POSITIVE-DOUBLE-FLOAT
-   (parent :accessor parent
-	   :initarg :parent
-	   :initform nil)
-   (complementary-edge-class
-    :allocation :class
-    :reader complementary-edge-class
-    :initarg :complementary-edge-class
-    :initform 'searchable-edge)))
+     ((edges :accessor edges :initarg :edges)
+      (cost :accessor cost :initarg :cost :type number
+            :initform 0) ;  MOST-POSITIVE-DOUBLE-FLOAT
+      (parent :accessor parent
+              :initarg :parent
+              :initform nil)
+      (complementary-edge-class
+       :allocation :class
+       :reader complementary-edge-class
+       :initarg :complementary-edge-class
+       :initform 'searchable-edge)))
 
 @export
 (defgeneric generate-nodes (searchable-node))
 
 (defmethod slot-unbound (class (node searchable-node)
-			 (slot (eql 'edges)))
+                               (slot (eql 'edges)))
   (with-slots (edges) node
-    (setf edges nil)
-    (mapcar
-     (lambda (new)
-       (connect node new))
-     (generate-nodes node))))
+     (setf edges nil)
+     (mapcar
+      (lambda (new)
+        (connect node new))
+      (generate-nodes node))))
 
 @export '(node edge)
 
 (defpattern node (edges parent cost)
   `(class searchable-node
-	  (edges ,edges) (parent ,parent)
-	  (cost ,cost)))
+          (edges ,edges) (parent ,parent)
+          (cost ,cost)))
 
 @export @export-accessors @doc "an edge used in lrta*/rta*
 searching. any subclass of `searchable-edge' should implement a method
 `cost'.  Also, accessor EDGE-TO and EDGE-FROM should return a
 `searchable-node' instance."
 (defclass searchable-edge ()
-  ((to :accessor edge-to :initarg :to)
-   (from :accessor edge-from :initarg :from)
-   (complementary-node-class
-    :allocation :class
-    :reader complementary-node-class
-    :initarg :complementary-node-class
-    :initform 'searchable-node)))
+     ((to :accessor edge-to :initarg :to)
+      (from :accessor edge-from :initarg :from)
+      (complementary-node-class
+       :allocation :class
+       :reader complementary-node-class
+       :initarg :complementary-node-class
+       :initform 'searchable-node)))
 
 (defmethod print-object ((e searchable-edge) s)
   (print-unreadable-object (e s :type t)
     (with-slots (to from) e
-      (format s "~w ~:@_ → ~:@_ ~w" from to))))
+       (format s "~w ~:@_ → ~:@_ ~w" from to))))
 
-(defpattern edge (from to)
-  `(class searchable-edge (to ,to) (from ,from)))
+(eval-when (:compile-toplevel
+            :load-toplevel
+            :execute)
+  (defpattern edge (from to)
+    `(class searchable-edge (to ,to) (from ,from))))
 
+(export 'edge)
 
 @export
 @doc "gives the cost between the two nodes. "
 (defgeneric heuristic-cost-between
-	(searchable-node-from searchable-node-to))
+    (searchable-node-from searchable-node-to))
 
 @export
 @doc "gives the real cost of an edge. it has `+' method combination."
@@ -85,18 +89,18 @@ searching. any subclass of `searchable-edge' should implement a method
 
 (defmethod connect ((from searchable-node) (to searchable-node))
   (let ((e (make-instance (complementary-edge-class from)
-			  :from from :to to)))
+              :from from :to to)))
     (push e (edges from))
     e))
 
 @export
 (defclass searchable-bidirectional-node (searchable-node)
-  ())
+     ())
 
 (defmethod connect ((from searchable-bidirectional-node)
-		    (to searchable-bidirectional-node))
+                    (to searchable-bidirectional-node))
   (let ((e (make-instance (complementary-edge-class from)
-			  :from from :to to)))
+              :from from :to to)))
     (push e (edges from))
     (push e (edges to))
     e))
@@ -109,3 +113,4 @@ searching. any subclass of `searchable-edge' should implement a method
 (defgeneric constraint-ordering-op (node)
   (:method (node)
     0))
+

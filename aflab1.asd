@@ -33,10 +33,8 @@ Author: guicho ()
 			 (:file :mixin)
 			 (:file :rb-tree)
 			 (:file :priority-queue)
+			 (:file :more-labels)
 			 (:file :a*-search)
-			 
-			 (:file :model)
-
 			 (:module :8puzzle
 				  :serial :t
 				  :components

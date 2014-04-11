@@ -20,6 +20,7 @@
                 :serial t
                 :components
                 ((:file :package)
+                 (:file :model)
 		 (:file :drawer)
 		 (:file :core)
 		 (:file :a-star)

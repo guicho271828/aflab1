@@ -34,15 +34,12 @@ Author: guicho ()
 			 (:file :rb-tree)
 			 (:file :priority-queue)
 			 (:file :more-labels)
-			 (:file :a*-search)
+			 (:file :a-star-search)
 			 (:module :8puzzle
 				  :serial :t
 				  :components
 				  ((:file :model)
-				   (:file :ops)))
-
-
-			 )))
+				   (:file :ops))))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

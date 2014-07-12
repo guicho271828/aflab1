@@ -5,11 +5,7 @@
 
 ; red-black-tree
 
-@export 'leaf
-
 (defstruct (leaf (:constructor leaf)))
-
-@export 'red-black-node
 
 (defstruct (red-black-node
 	     (:constructor
@@ -20,13 +16,6 @@
   (label 0 :type number)
   content
   right)
-
-(export '(rb-node
-	  red-black-node-color
-	  red-black-node-left
-	  red-black-node-label
-	  red-black-node-content
-	  red-black-node-right))
 
 (defmethod print-object ((o leaf) s)
   (format s "LEAF"))
@@ -46,10 +35,8 @@
 
 (declaim (ftype (function (t number t t) red-black-node) red black))
 
-@export
 (defun red (left label content right)
   (rb-node :red left label content right))
-@export
 (defun black (left label content right)
   (rb-node :black left label content right))
 (defpattern red (left label content right)
@@ -60,7 +47,6 @@
 (declaim (ftype (function (number (or leaf red-black-node)) t) rb-member))
 (declaim (ftype (function (number (or leaf red-black-node)) (or null red-black-node)) rb-member-node))
 
-@export
 (defun rb-member (x tree)
   (when-let ((node (rb-member-node x tree)))
     (red-black-node-content node)))
@@ -71,7 +57,6 @@
 ;; 	  new-value)
 ;;     (rb-insert tree x new-value)))
 
-@export
 (defun rb-member-node (x tree)
   (match tree
     ((leaf) nil)
@@ -82,7 +67,6 @@
 
 
 (declaim (ftype (function ((or red-black-node leaf)) (or red-black-node leaf)) balance))
-@export
 (defun balance (tree)
   (match tree
     ((or (black (red (red a x xc b) y yc c) z zc d)
@@ -96,7 +80,6 @@
                 rb-minimum-node rb-maximum-node))
 (declaim (ftype (function ((or red-black-node leaf)) t)
                 rb-minimum rb-maximum))
-@export
 (defun rb-minimum-node (tree)
   (match tree
     ((rb-node _ (leaf) _ _ _)
@@ -104,13 +87,11 @@
     ((rb-node _ left _ _ _)
      (rb-minimum-node left))))
 
-@export
 (defun rb-minimum (tree)
   (match (rb-minimum-node tree)
     ((rb-node _ _ label content _)
      (values content label))))
 
-@export
 (defun rb-maximum-node (tree)
   (match tree
     ((rb-node _ _ _ _ (leaf))
@@ -118,14 +99,12 @@
     ((rb-node _ _ _ _ right)
      (rb-maximum-node right))))
 
-@export
 (defun rb-maximum (tree)
   (match (rb-maximum-node tree)
     ((rb-node _ _ label content _)
      (values content label))))
 
 (declaim (ftype (function ((or leaf red-black-node) number &optional t) red-black-node) rb-insert))
-@export
 (defun rb-insert (tree x &optional (xc x))
   (labels ((ins (tree)
 	     (match tree
@@ -144,7 +123,6 @@
 
 (declaim (ftype (function ((or leaf red-black-node)) (values (or leaf red-black-node) t number))
                 rb-remove-minimum-node))
-@export
 (defun rb-remove-minimum-node (tree)
   (let (min-label min-content)
     (labels
@@ -163,7 +141,6 @@
 
 (declaim (ftype (function ((or leaf red-black-node) number) (or red-black-node leaf))
                 rb-remove))
-@export
 (defun rb-remove (tree x)
   (labels
       ((rec (tree)
@@ -188,7 +165,6 @@
           ((rb-node _ left y content right)
            (black left y content right))))))
 
-@export
 (defun rb-node-next-node (node tree)
   (match node
     ((rb-node _ _ _ _ (and right (type red-black-node)))
@@ -210,7 +186,6 @@
 	      ((> x label) (%rb-node-next-node-rec node right))
 	      (t right)))))))
 
-@export
 (defun rb-node-previous-node (node tree)
   (match node
     ((rb-node _ (and left (type red-black-node)) _ _ _)
@@ -232,7 +207,6 @@
 	      ((> x label) (%rb-node-previous-node-rec node right))
 	      (t left)))))))
 
-@export
 (defun rb-member-node-after (x tree)
   (match tree
     ((leaf) tree)
@@ -254,7 +228,6 @@
            (t
 	    (rb-minimum-node right))))))
 
-@export
 (defun rb-member-node-before (x tree)
   (match tree
     ((leaf) tree)
@@ -275,16 +248,13 @@
 	      (_ tree)))
            (t
 	    (rb-maximum-node left))))))
-@export
 (defun rb-member-after (x tree)
   (red-black-node-content
    (rb-member-node-after x tree)))
-@export
 (defun rb-member-before (x tree)
   (red-black-node-content
    (rb-member-node-before x tree)))
 
-@export
 (defun rb-remove-after (tree x)
   (match tree
     ((leaf) tree)
@@ -307,7 +277,6 @@
            (t
 	    (balance (rb-node color left label content (leaf))))))))
 
-@export
 (defun rb-remove-before (tree x)
   (match tree
     ((leaf) tree)
@@ -329,4 +298,4 @@
 	      (_ tree)))
            (t
 	    (balance (rb-node color (leaf) label content right)))))))
-     
+

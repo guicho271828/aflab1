@@ -30,6 +30,11 @@ check for the duplicates in a way that fits to the structure
        :initarg :complementary-edge-class
        :initform 'searchable-edge)))
 
+(defmethod reinitialize-instance ((instance searchable-node)
+                                  &rest initargs
+                                    &key &allow-other-keys)
+  (apply #'shared-initialize instance nil :cost 0 :parent nil initargs))
+
 @export
 (defgeneric generate-nodes (searchable-node))
 

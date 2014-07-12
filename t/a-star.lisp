@@ -74,9 +74,21 @@ Copyright (c) 2013 guicho ()
                    (format nil "result/~a.png" (now))))))))
 
 (defparameter *samples* (make-samples 4000 *max*))
-(defparameter *edges* (make-graph *samples* 30))
-(defparameter *start* (random-elt *samples*))
-(defparameter *end* (walk-randomly 100 *start*))
+(defparameter *start* (top-left *samples*))
+(defparameter *end* (bottom-right *samples*))
+
+(defparameter *edges*
+  (handler-bind ((path-not-found
+                  (lambda (c)
+                    (warn "no path! rebuilding the graph")
+                    (invoke-restart (find-restart 'retry)))))
+    (print "Doing something heavy ... please be patient")
+    (do-restart ((retry (lambda (&rest args))))
+      (dolist (s *samples*)
+        (reinitialize-instance s :edges nil))
+      (let ((edges (make-graph *samples* 3)))
+        (a*-search *start* *end*)
+        edges))))
 
 (defun benchmark ()
   (format t "Number of samples: ~50A~&Number of edges: ~50A~&"
@@ -84,5 +96,5 @@ Copyright (c) 2013 guicho ()
   (dolist (s *samples*)
     (reinitialize-instance s))
   (time
-   (a*-search *start* *end*)))
+   (a*-search *start* *end* :verbose nil)))
 

@@ -27,3 +27,10 @@
   (when-let ((node (rb-member-node priority queue)))
     (removef (red-black-node-content node) thing))
   queue)
+
+@export
+(defun queue-length (tree)
+  (match tree
+    ((rb-node _ left _ content right)
+     (+ (queue-length left) (queue-length right) (length content)))
+    ((leaf) 0)))

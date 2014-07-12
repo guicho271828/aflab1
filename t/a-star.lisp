@@ -25,13 +25,13 @@ Copyright (c) 2013 guicho ()
 (defun make-graph (samples average-edge-number)
   (iter outer
         (for 2d in samples)
-        (iter (for next in
+        (iter (with connect-num = (floor
+                                  (* average-edge-number
+                                     (+ 1 (gaussian-random -1 1)))))
+              (for next in
                    (shuffle
-                    (k-nearest 2d
-                               (floor
-                                (* average-edge-number
-                                   (+ 1 (gaussian-random -1 1))))
-                               samples)))
+                    (k-nearest 2d (* 2 connect-num) samples)))
+              (for i below connect-num)
               (in outer
                   (collect
                       (connect 2d next))))))
@@ -45,7 +45,7 @@ Copyright (c) 2013 guicho ()
 
 (test test-with-draw
   (let* ((samples (make-samples 500 *max*))
-         (edges (make-graph samples 10)))
+         (edges (make-graph samples 3)))
     (with-canvas (:width *max* :height *max*)
       (set-rgba-stroke 0 0 0 0.3)
       (set-rgba-fill 0 0 0 0.3)

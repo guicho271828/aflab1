@@ -17,15 +17,31 @@ Copyright (c) 2013 guicho ()
   (iter (repeat sample-num)
         (collect (2d (random max) (random max)))))
 
+(defun k-nearest (target k samples)
+  (subseq (sort (remove target samples) #'<
+                :key (curry #'heuristic-cost-between target))
+          0 k))
+
 (defun make-graph (samples average-edge-number)
   (iter outer
         (for 2d in samples)
-        (iter (for i below (floor
-                            (* average-edge-number
-                               (+ 1 (gaussian-random -1 1)))))
+        (iter (for next in
+                   (shuffle
+                    (k-nearest 2d
+                               (floor
+                                (* average-edge-number
+                                   (+ 1 (gaussian-random -1 1))))
+                               samples)))
               (in outer
                   (collect
-                      (connect 2d (random-elt (remove 2d samples))))))))
+                      (connect 2d next))))))
+
+(defun top-left (samples)
+  (iter (for s in samples)
+        (finding s minimizing (heuristic-cost-between s (2d 0 0)))))
+(defun bottom-right (samples)
+  (iter (for s in samples)
+        (finding s maximizing (heuristic-cost-between s (2d 0 0)))))
 
 (test test-with-draw
   (let* ((samples (make-samples 500 *max*))
@@ -37,11 +53,8 @@ Copyright (c) 2013 guicho ()
       (mapc #'draw samples)
       (mapc #'draw edges)
       (unwind-protect
-           (let* ((start (random-elt samples))
-                  (end  (iter (for candidate = (random-elt samples))
-                              (if (eq start candidate)
-                                  (next-iteration)
-                                  (return candidate))))
+           (let* ((start (top-left samples))
+                  (end (bottom-right samples))
                   (last (a*-search start end)))
              (with-graphics-state
                (set-rgba-fill 1 0 0 0.7)
@@ -60,21 +73,16 @@ Copyright (c) 2013 guicho ()
                    :aflab1
                    (format nil "result/~a.png" (now))))))))
 
+(defparameter *samples* (make-samples 4000 *max*))
+(defparameter *edges* (make-graph *samples* 30))
+(defparameter *start* (random-elt *samples*))
+(defparameter *end* (walk-randomly 100 *start*))
+
 (defun benchmark ()
-  (let* ((samples (make-samples 150 *max*))
-         (edges (make-graph samples 7)))
-    (format t "Number of samples: ~50A~&Number of edges: ~50A~&"
-            (length samples) (length edges))
-    (let* ((start (random-elt samples))
-           (end (random-elt (remove start samples))))
-      (time
-       (%benchmark1 start end)))))
-
-(defun %benchmark1 (start end)
-  (declare (inline a*-search))
-  (a*-search start end))
-
-(defun %benchmark2 (start end)
-  (declare (inline a*-search))
-  (a*-search start end))
+  (format t "Number of samples: ~50A~&Number of edges: ~50A~&"
+          (length *samples*) (length *edges*))
+  (dolist (s *samples*)
+    (reinitialize-instance s))
+  (time
+   (a*-search *start* *end*)))
 

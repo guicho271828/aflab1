@@ -1,12 +1,9 @@
 
-(in-package :aflab1)
+(in-package :aflab1-test)
 (cl-syntax:use-syntax :annot)
 
-@export
 (defvar +goal-state+ (vector 0 1 2 3 4 5 6 7 8))
 
-@export
-@export-accessors
 (defclass 8puzzle-node (searchable-node)
   ((complementary-edge-class :initform '8puzzle-edge)
    (state :accessor state :initarg :state
@@ -28,14 +25,12 @@
 (defmethod generic-eq ((n1 8puzzle-node) (n2 8puzzle-node))
   (equalp (state n1) (state n2)))
 
-@export
 (defun verify (8p)
   (ematch 8p
     ((8puzzle state pos)
      (assert (= (aref state pos) 0))
      t)))
 
-@export
 (defun 8puzzle (state pos &optional (class '8puzzle-node))
   (make-instance class :state state :position pos))
 
@@ -50,7 +45,6 @@
        (format s "~_~<~;~a ~a ~a~%~0:t~a ~a ~a~%~0:t~a ~a ~a~;~:> :cost ~a"
 	       (coerce state 'list) cost)))))
 
-@export
 (defclass 8puzzle-edge (searchable-edge)
   ((complementary-node-class :initform '8puzzle-node)))
 
@@ -60,8 +54,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;variants
 
-
-@export
 (defclass dijkstra-8puzzle (8puzzle-node) ())
 (defmethod heuristic-cost-between
     ((from dijkstra-8puzzle)
@@ -70,8 +62,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; difference
-
-@export
 (defclass diff-8puzzle (8puzzle-node) ())
 (defmethod heuristic-cost-between
     ((from diff-8puzzle)
@@ -80,7 +70,6 @@
 	(for x2 in-vector (state to))
 	(counting (not (= x1 x2)))))
 
-@export
 (defclass manhattan-8puzzle (8puzzle-node) ())
 (defmethod heuristic-cost-between
     ((from manhattan-8puzzle)

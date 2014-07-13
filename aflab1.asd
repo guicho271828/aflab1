@@ -33,12 +33,7 @@ Author: guicho ()
 			 (:file :mixin)
 			 (:file :rb-tree)
 			 (:file :priority-queue)
-			 (:file :a-star-search)
-			 (:module :8puzzle
-				  :serial :t
-				  :components
-				  ((:file :model)
-				   (:file :ops))))))
+			 (:file :a-star-search))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

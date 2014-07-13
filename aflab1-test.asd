@@ -25,9 +25,12 @@
 		 (:file :core)
 		 (:file :a-star)
                  (:file :regression-stack-exhanst)
-		 (:module :8puzzle
-			  :components
-			  ((:file :test))))))
+                 (:module :8puzzle
+                          :serial :t
+                          :components
+                          ((:file :model)
+                           (:file :ops)
+                           (:file :test))))))
   :perform (load-op :after (op c) 
-		    (fiveam:run! :aflab1)
+		    (eval (read-from-string "(fiveam:run! :aflab1)"))
 		    (asdf:clear-system c)))

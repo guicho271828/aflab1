@@ -1,6 +1,6 @@
 
 
-(in-package :aflab1)
+(in-package :aflab1-test)
 (cl-syntax:use-syntax :annot)
 (declaim (inline swap-array))
 (defun swap-array (pos1 pos2 ary)
@@ -46,4 +46,3 @@
 	 (6 (list r u))
 	 (7 (list l r u))
 	 (8 (list l u)))))))
-	 

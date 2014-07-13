@@ -1,7 +1,7 @@
 
 
-(in-package :aflab1-test)
-(def-suite :core :in :aflab1)
+(in-package :guicho-a-star-test)
+(def-suite :core :in :guicho-a-star)
 (in-suite :core)
 
 (test heuristic-cost-between

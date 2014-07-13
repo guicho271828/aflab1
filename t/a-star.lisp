@@ -1,11 +1,11 @@
 #|
-This file is a part of aflab1 project.
+This file is a part of guicho-a-star project.
 Copyright (c) 2013 guicho ()
 |#
 
-(in-package :aflab1-test)
+(in-package :guicho-a-star-test)
 
-(def-suite :a-star :in :aflab1)
+(def-suite :a-star :in :guicho-a-star)
 (in-suite :a-star)
 
 ;; blah blah blah.
@@ -67,10 +67,10 @@ Copyright (c) 2013 guicho ()
                (draw-path last)))
         (ensure-directories-exist
          (asdf:system-relative-pathname
-          :aflab1
+          :guicho-a-star
           "result/"))
         (save-png (asdf:system-relative-pathname
-                   :aflab1
+                   :guicho-a-star
                    (format nil "result/~a.png" (now))))))))
 
 (defparameter *samples* (make-samples 4000 *max*))

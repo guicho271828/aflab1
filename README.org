@@ -1,4 +1,4 @@
-* Aflab1  - 
+* Guicho-A-Star  - 
 
 ** Usage
 

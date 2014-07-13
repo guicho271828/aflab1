@@ -1,17 +1,17 @@
 #|
-  This file is a part of aflab1 project.
+  This file is a part of guicho-a-star project.
   Copyright (c) 2013 guicho ()
 |#
 (require :fiveam)
 (in-package :cl-user)
-(defpackage aflab1-test-asd
+(defpackage guicho-a-star-test-asd
   (:use :cl :asdf))
-(in-package :aflab1-test-asd)
+(in-package :guicho-a-star-test-asd)
 
-(defsystem aflab1-test
+(defsystem guicho-a-star-test
   :author "guicho"
   :license "LLGPL"
-  :depends-on (:aflab1
+  :depends-on (:guicho-a-star
 	       :fiveam
 	       :vecto
 	       :local-time
@@ -32,5 +32,5 @@
                            (:file :ops)
                            (:file :test))))))
   :perform (load-op :after (op c) 
-		    (eval (read-from-string "(fiveam:run! :aflab1)"))
+		    (eval (read-from-string "(fiveam:run! :guicho-a-star)"))
 		    (asdf:clear-system c)))

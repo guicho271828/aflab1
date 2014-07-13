@@ -1,6 +1,6 @@
 
-(in-package :aflab1-test)
-(def-suite :8puzzle :in :aflab1)
+(in-package :guicho-a-star-test)
+(def-suite :8puzzle :in :guicho-a-star)
 (in-suite :8puzzle)
 
 (test :generate-nodes

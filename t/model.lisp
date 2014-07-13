@@ -1,5 +1,5 @@
 
-(in-package :aflab1-test)
+(in-package :guicho-a-star-test)
 
 (defclass 2d-node (searchable-bidirectional-node)
      ((complementary-edge-class :initform '2d-edge)

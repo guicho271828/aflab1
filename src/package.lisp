@@ -1,5 +1,5 @@
 #|
-  This file is a part of aflab1 project.
+  This file is a part of guicho-a-star project.
   Copyright (c) 2013 guicho ()
 |#
 
@@ -40,7 +40,7 @@
            :rb-remove-before
            ))
 
-(defpackage guicho-a*
+(defpackage guicho-a-star
   (:use :cl
 	:iterate
 	:alexandria
@@ -52,21 +52,9 @@
 	:annot.class
 	:annot.doc
 	:optima
-	:optima.extra))
-
-(defpackage aflab1
-  (:use :cl
-	:guicho-a*
-	:iterate
-	:alexandria
-	:anaphora
-	:guicho-utilities
-	:annot
-	:annot.class
-	:annot.doc
-	:optima
-	:optima.extra))
-(in-package :aflab1)
+	:optima.extra)
+  (:nicknames :guicho-a*))
+(in-package :guicho-a-star)
 
 ;; blah blah blah.
 

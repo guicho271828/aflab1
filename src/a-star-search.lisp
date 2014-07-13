@@ -33,7 +33,7 @@
       (when *verbose*
         (with-lock-held (*print-lock*)
           (format t
-                  "~2%~4tStart searching : ~w ~& minf* = ~a"
+                  "~2%~4tStart searching : ~w ~& Initial minf* = ~a"
                   start *minimum-f*)))
       (%rec (rb-insert (leaf)
                        *minimum-f*

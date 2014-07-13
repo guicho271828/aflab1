@@ -1,5 +1,5 @@
 
-(in-package :aflab1-test)
+(in-package :guicho-a-star-test)
 (cl-syntax:use-syntax :annot)
 
 (defvar +goal-state+ (vector 0 1 2 3 4 5 6 7 8))

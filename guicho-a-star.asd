@@ -1,5 +1,5 @@
 #|
-This file is a part of aflab1 project.
+This file is a part of guicho-a-star project.
 Copyright (c) 2013 guicho ()
 |#
 
@@ -10,11 +10,11 @@ Author: guicho ()
 |#
 
 (in-package :cl-user)
-(defpackage aflab1-asd
+(defpackage guicho-a-star-asd
   (:use :cl :asdf))
-(in-package :aflab1-asd)
+(in-package :guicho-a-star-asd)
 
-(defsystem aflab1
+(defsystem guicho-a-star
   :version "0.1"
   :author "guicho"
   :license "LLGPL"
@@ -47,4 +47,4 @@ Author: guicho ()
                                :fill-pointer t)))
           (setf (fill-pointer seq) (read-sequence seq stream))
           seq)))
-  :in-order-to ((test-op (load-op aflab1-test))))
+  :in-order-to ((test-op (load-op guicho-a-star-test))))

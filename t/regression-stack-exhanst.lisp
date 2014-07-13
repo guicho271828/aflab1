@@ -1,4 +1,4 @@
-(in-package :aflab1-test)
+(in-package :guicho-a-star-test)
 
 (in-suite :a-star)
 

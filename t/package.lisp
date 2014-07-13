@@ -1,10 +1,9 @@
 
 (in-package :cl-user)
-(defpackage aflab1-test
+(defpackage guicho-a-star-test
   (:use :cl
 	:guicho-a*
 	:guicho-red-black-tree
-        :aflab1
 	:alexandria
 	:iterate
 	:anaphora
@@ -15,5 +14,5 @@
 	:fiveam)
   (:shadow :rotate :fail))
 
-(in-package :aflab1-test)
-(def-suite :aflab1)
+(in-package :guicho-a-star-test)
+(def-suite :guicho-a-star)

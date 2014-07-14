@@ -13,7 +13,7 @@
 	      (color left label content right)))
   (color :red :type symbol)
   left
-  (label 0 :type number)
+  (label 0 :type rational)
   content
   right)
 
@@ -33,7 +33,7 @@
      (write (list color label content
 		  left right) :stream s))))
 
-(declaim (ftype (function (t number t t) red-black-node) red black))
+(declaim (ftype (function (t rational t t) red-black-node) red black))
 
 (defun red (left label content right)
   (rb-node :red left label content right))
@@ -44,8 +44,8 @@
 (defpattern black (left label content right)
   `(rb-node :black ,left ,label ,content ,right))
 
-(declaim (ftype (function (number (or leaf red-black-node)) t) rb-member))
-(declaim (ftype (function (number (or leaf red-black-node)) (or null red-black-node)) rb-member-node))
+(declaim (ftype (function (rational (or leaf red-black-node)) t) rb-member))
+(declaim (ftype (function (rational (or leaf red-black-node)) (or null red-black-node)) rb-member-node))
 
 (defun rb-member (x tree)
   (when-let ((node (rb-member-node x tree)))
@@ -104,7 +104,7 @@
     ((rb-node _ _ label content _)
      (values content label))))
 
-(declaim (ftype (function ((or leaf red-black-node) number &optional t) red-black-node) rb-insert))
+(declaim (ftype (function ((or leaf red-black-node) rational &optional t) red-black-node) rb-insert))
 (defun rb-insert (tree x &optional (xc x))
   (labels ((ins (tree)
 	     (match tree
@@ -121,7 +121,7 @@
       ((rb-node _ left label content right)
        (black left label content right)))))
 
-(declaim (ftype (function ((or leaf red-black-node)) (values (or leaf red-black-node) t number))
+(declaim (ftype (function ((or leaf red-black-node)) (values (or leaf red-black-node) t rational))
                 rb-remove-minimum-node))
 (defun rb-remove-minimum-node (tree)
   (let (min-label min-content)
@@ -139,7 +139,7 @@
 	      min-content
 	      min-label))))
 
-(declaim (ftype (function ((or leaf red-black-node) number) (or red-black-node leaf))
+(declaim (ftype (function ((or leaf red-black-node) rational) (or red-black-node leaf))
                 rb-remove))
 (defun rb-remove (tree x)
   (labels

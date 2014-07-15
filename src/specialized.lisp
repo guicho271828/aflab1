@@ -7,6 +7,7 @@
          (edge-cost (symbolicate edge-class '-cost))
          (node-class (symbolicate prefix '-cost-node)))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
+       (export '(,edge-class ,edge-cost ,node-class))
        (defstruct (,edge-class (:include searchable-edge)
                                (:constructor ,edge-class (from to)))
          (cost ,default :type ,type))

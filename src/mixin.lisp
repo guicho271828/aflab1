@@ -84,12 +84,7 @@ searching. any subclass of `searchable-edge' should implement a method
 `searchable-node' instance."
 (defclass searchable-edge ()
   ((to :accessor edge-to :initarg :to)
-   (from :accessor edge-from :initarg :from)
-   (complementary-node-class
-    :allocation :class
-    :reader complementary-node-class
-    :initarg :complementary-node-class
-    :initform 'searchable-node)))
+   (from :accessor edge-from :initarg :from)))
 
 (defmethod print-object ((e searchable-edge) s)
   (print-unreadable-object (e s :type t)

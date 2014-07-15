@@ -31,6 +31,7 @@ Author: guicho ()
 			:components
 			((:file :package)
 			 (:file :mixin)
+                         (:file :patterns)
 			 (:file :rb-tree)
 			 (:file :priority-queue)
 			 (:file :a-star-search))))

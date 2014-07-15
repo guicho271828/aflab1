@@ -73,7 +73,7 @@ Copyright (c) 2013 guicho ()
                    :guicho-a-star
                    (format nil "result/~a.png" (now))))))))
 
-(defparameter *samples* (make-samples 4000 *max*))
+(defparameter *samples* (make-samples 1000 *max*))
 (defparameter *start* (top-left *samples*))
 (defparameter *end* (bottom-right *samples*))
 

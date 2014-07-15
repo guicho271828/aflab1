@@ -29,6 +29,7 @@
                           :serial :t
                           :components
                           ((:file :model)
+                           (:file :methods)
                            (:file :ops)
                            (:file :test))))))
   :perform (load-op :after (op c) 

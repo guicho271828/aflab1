@@ -94,7 +94,7 @@
                 (t
                  (format t "~% What happened? ~%~w"  (reverse lasts))))))))
       (destructuring-bind (start end) start-end
-        (funcall #'a*-search start end :verbose verbose)))))
+        (funcall #'a*-search-clos start end :verbose verbose)))))
 
 (defun problem-generator (class)
   (lambda () 

@@ -55,7 +55,7 @@ Copyright (c) 2013 guicho ()
       (unwind-protect
            (let* ((start (top-left samples))
                   (end (bottom-right samples))
-                  (last (a*-search start end)))
+                  (last (a*-search-clos start end)))
              (with-graphics-state
                (set-rgba-fill 1 0 0 0.7)
                (set-rgba-stroke 1 0 0 0.7)
@@ -87,7 +87,7 @@ Copyright (c) 2013 guicho ()
       (dolist (s *samples*)
         (reinitialize-instance s :edges nil))
       (let ((edges (make-graph *samples* 3)))
-        (a*-search *start* *end*)
+        (a*-search-clos *start* *end*)
         edges))))
 
 (defun benchmark ()
@@ -96,5 +96,5 @@ Copyright (c) 2013 guicho ()
   (dolist (s *samples*)
     (reinitialize-instance s))
   (time
-   (a*-search *start* *end* :verbose nil)))
+   (a*-search-clos *start* *end* :verbose nil)))
 

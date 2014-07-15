@@ -26,4 +26,4 @@
 (test stack-exhaust-check
   (let ((start (make-instance 'test-node :value 0))
         (end (make-instance 'test-node :value 1000000)))
-    (a*-search start end)))
+    (a*-search-clos start end)))

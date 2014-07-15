@@ -109,18 +109,4 @@ searching. any subclass of `searchable-edge' should implement a method
     (push e (edges from))
     e))
 
-@export
-(defclass searchable-bidirectional-node (searchable-node)
-  ())
-
-(defmethod connect ((from searchable-bidirectional-node)
-                    (to searchable-bidirectional-node)
-                    &rest keys &key &allow-other-keys)
-  (let ((e (apply #'make-instance
-                  (complementary-edge-class from)
-                  :from from :to to
-                  keys)))
-    (push e (edges from))
-    (push e (edges to))
-    e))
 

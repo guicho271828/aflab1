@@ -1,7 +1,7 @@
 
 (in-package :guicho-a-star-test)
 
-(defclass 2d-node (searchable-bidirectional-node)
+(defclass 2d-node (searchable-node)
      ((complementary-edge-class :initform '2d-edge)
       (x :accessor x :initarg :x :type number)
       (y :accessor y :initarg :y :type number)))

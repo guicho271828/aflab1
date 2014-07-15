@@ -34,7 +34,10 @@ Copyright (c) 2013 guicho ()
               (for i below connect-num)
               (in outer
                   (collect
-                      (connect 2d next))))))
+                      (connect 2d next)))
+              (in outer
+                  (collect
+                      (connect next 2d))))))
 
 (defun top-left (samples)
   (iter (for s in samples)

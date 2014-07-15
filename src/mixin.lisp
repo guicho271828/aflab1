@@ -2,6 +2,37 @@
 (in-package :guicho-a*)
 (cl-syntax:use-syntax :annot)
 
+;; generic functions
+
+@export
+@doc "Users do not call this function.
+It is implicitly  called by a method `slot-unbound' on slot `edges' of a node."
+(defgeneric generate-nodes (searchable-node))
+
+@export
+@doc "gives the heuristic cost (not real cost) between the two nodes."
+(defgeneric heuristic-cost-between
+    (searchable-node-from searchable-node-to))
+
+@export
+@doc "gives the real cost of an edge."
+(defgeneric cost (searchable-edge))
+
+@export
+(defgeneric connect (searchable-node-from searchable-node-to
+                     &rest keys &key &allow-other-keys))
+
+@export
+(defgeneric generic-eq (thing1 thing2))
+
+@export
+(defgeneric constraint-ordering-op (node)
+  (:method (node)
+    0))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; mixins
+
 @export
 @export-accessors
 @doc "a node used in lrta*/rta* searching. any subclass of
@@ -15,39 +46,33 @@ call GENERATE-NODES, connect the nodes to itself and
 if GENERATE-NODES allows many duplicated instances in the meaning of
 GENERIC-EQ, then the heap exhaust may occur. Users should manually
 check for the duplicates in a way that fits to the structure
- of the instance.
-"
+ of the instance. "
 (defclass searchable-node () 
-     ((edges :accessor edges :initarg :edges)
-      (cost :accessor cost :initarg :cost :type number
-            :initform 0) ;  MOST-POSITIVE-DOUBLE-FLOAT
-      (parent :accessor parent
-              :initarg :parent
-              :initform nil)
-      (complementary-edge-class
-       :allocation :class
-       :reader complementary-edge-class
-       :initarg :complementary-edge-class
-       :initform 'searchable-edge)))
+  ((edges :accessor edges :initarg :edges)
+   (cost :accessor cost :initarg :cost :type number
+         :initform 0) ;  MOST-POSITIVE-DOUBLE-FLOAT
+   (parent :accessor parent
+           :initarg :parent
+           :initform nil)
+   (complementary-edge-class
+    :allocation :class
+    :reader complementary-edge-class
+    :initarg :complementary-edge-class
+    :initform 'searchable-edge)))
 
 (defmethod reinitialize-instance ((instance searchable-node)
                                   &rest initargs
-                                    &key &allow-other-keys)
+                                  &key &allow-other-keys)
   (apply #'shared-initialize instance nil :cost 0 :parent nil initargs))
 
-@export
-(defgeneric generate-nodes (searchable-node))
-
 (defmethod slot-unbound (class (node searchable-node)
-                               (slot (eql 'edges)))
+                         (slot (eql 'edges)))
   (with-slots (edges) node
-     (setf edges nil)
-     (mapcar
-      (lambda (new)
-        (connect node new))
-      (generate-nodes node))))
-
-@export '(node edge)
+    (setf edges nil)
+    (mapcar
+     (lambda (new)
+       (connect node new))
+     (generate-nodes node))))
 
 (defpattern node (edges parent cost)
   `(class searchable-node
@@ -59,63 +84,43 @@ searching. any subclass of `searchable-edge' should implement a method
 `cost'.  Also, accessor EDGE-TO and EDGE-FROM should return a
 `searchable-node' instance."
 (defclass searchable-edge ()
-     ((to :accessor edge-to :initarg :to)
-      (from :accessor edge-from :initarg :from)
-      (complementary-node-class
-       :allocation :class
-       :reader complementary-node-class
-       :initarg :complementary-node-class
-       :initform 'searchable-node)))
+  ((to :accessor edge-to :initarg :to)
+   (from :accessor edge-from :initarg :from)
+   (complementary-node-class
+    :allocation :class
+    :reader complementary-node-class
+    :initarg :complementary-node-class
+    :initform 'searchable-node)))
 
 (defmethod print-object ((e searchable-edge) s)
   (print-unreadable-object (e s :type t)
     (with-slots (to from) e
-       (format s "~w ~:@_ → ~:@_ ~w" from to))))
+      (format s "~w ~:@_ → ~:@_ ~w" from to))))
 
-(eval-when (:compile-toplevel
-            :load-toplevel
-            :execute)
-  (defpattern edge (from to)
-    `(class searchable-edge (to ,to) (from ,from))))
+(defpattern edge (from to)
+  `(class searchable-edge (to ,to) (from ,from)))
 
-(export 'edge)
-
-@export
-@doc "gives the cost between the two nodes. "
-(defgeneric heuristic-cost-between
-    (searchable-node-from searchable-node-to))
-
-@export
-@doc "gives the real cost of an edge. it has `+' method combination."
-(defgeneric cost (searchable-edge))
-
-@export
-(defgeneric connect (searchable-node-from searchable-node-to))
-
-(defmethod connect ((from searchable-node) (to searchable-node))
-  (let ((e (make-instance (complementary-edge-class from)
-              :from from :to to)))
+(defmethod connect ((from searchable-node) (to searchable-node)
+                    &rest keys &key &allow-other-keys)
+  (let ((e (apply #'make-instance
+                  (complementary-edge-class from)
+                  :from from :to to
+                  keys)))
     (push e (edges from))
     e))
 
 @export
 (defclass searchable-bidirectional-node (searchable-node)
-     ())
+  ())
 
 (defmethod connect ((from searchable-bidirectional-node)
-                    (to searchable-bidirectional-node))
-  (let ((e (make-instance (complementary-edge-class from)
-              :from from :to to)))
+                    (to searchable-bidirectional-node)
+                    &rest keys &key &allow-other-keys)
+  (let ((e (apply #'make-instance
+                  (complementary-edge-class from)
+                  :from from :to to
+                  keys)))
     (push e (edges from))
     (push e (edges to))
     e))
-
-
-@export
-(defgeneric generic-eq (thing1 thing2))
-
-@export
-(defgeneric constraint-ordering-op (node)
-  (:method (node)
-    0))
 

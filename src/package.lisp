@@ -53,6 +53,7 @@
 	:annot.doc
 	:optima
 	:optima.extra)
+  (:export :edge :node)
   (:nicknames :guicho-a*))
 (in-package :guicho-a-star)
 

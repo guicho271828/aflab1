@@ -2,62 +2,30 @@
 (in-package :guicho-a*)
 (cl-syntax:use-syntax :annot)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; fixed cost
-(defstruct (fixed-cost-edge (:include searchable-edge)
-                            (:constructor fixed-cost-edge (from to)))
-  (cost 0 :type number))
-(defclass fixed-cost-node (searchable-node) ())
-(defmethod cost ((e fixed-cost-edge))
-  @inline fixed-cost-edge-cost
-  (fixed-cost-edge-cost e))
-(defmethod connect ((from fixed-cost-node) (to fixed-cost-node))
-  (let ((e (fixed-cost-edge from to)))
-    (push e (edges from))
-    e))
+(defmacro define-cost-edge-node (prefix type default)
+  (let* ((edge-class (symbolicate prefix '-cost-edge))
+         (edge-cost (symbolicate edge-class '-cost))
+         (node-class (symbolicate prefix '-cost-node)))
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
+       (defstruct (,edge-class (:include searchable-edge)
+                               (:constructor ,edge-class (from to)))
+         (cost ,default :type ,type))
+       (defclass ,node-class (searchable-node) ())
+       (defmethod cost ((e ,edge-class))
+         (declare (inline ,edge-cost))
+         (,edge-cost e))
+       (defmethod (setf cost) (new (e ,edge-class))
+         (declare (inline (setf ,edge-cost)))
+         (setf (,edge-cost e) new))
+       (defmethod connect ((from ,node-class) (to ,node-class))
+         (let ((e (,edge-class from to)))
+           (push e (edges from))
+           e)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; discrete cost
-(defstruct (discrete-cost-edge (:include searchable-edge)
-                               (:constructor discrete-cost-edge (from to)))
-  (cost 0 :type fixnum))
-(defclass discrete-cost-node (searchable-node)
-  ())
-(defmethod cost ((e discrete-cost-edge))
-  @inline discrete-cost-edge-cost
-  (discrete-cost-edge-cost e))
-(defmethod connect ((from discrete-cost-node) (to discrete-cost-node))
-  (let ((e (discrete-cost-edge from to)))
-    (push e (edges from))
-    e))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; single-float cost
-(defstruct (single-float-cost-edge (:include searchable-edge)
-                            (:constructor single-float-cost-edge (from to)))
-  (cost 0.0 :type single-float))
-(defclass single-float-cost-node (searchable-node) ())
-(defmethod cost ((e single-float-cost-edge))
-  @inline single-float-cost-edge-cost
-  (single-float-cost-edge-cost e))
-(defmethod connect ((from single-float-cost-node) (to single-float-cost-node))
-  (let ((e (single-float-cost-edge from to)))
-    (push e (edges from))
-    e))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; double-float cost
-(defstruct (double-float-cost-edge (:include searchable-edge)
-                            (:constructor double-float-cost-edge (from to)))
-  (cost 0.0d0 :type double-float))
-(defclass double-float-cost-node (searchable-node) ())
-(defmethod cost ((e double-float-cost-edge))
-  @inline double-float-cost-edge-cost
-  (double-float-cost-edge-cost e))
-(defmethod connect ((from double-float-cost-node) (to double-float-cost-node))
-  (let ((e (double-float-cost-edge from to)))
-    (push e (edges from))
-    e))
+(define-cost-edge-node fixed number 0)
+(define-cost-edge-node discrete fixnum 0)
+(define-cost-edge-node single-float single-float 0.0)
+(define-cost-edge-node double-float double-float 0.0d0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; unit cost

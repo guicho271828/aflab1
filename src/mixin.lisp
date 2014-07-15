@@ -19,8 +19,7 @@ It is implicitly  called by a method `slot-unbound' on slot `edges' of a node."
 (defgeneric cost (searchable-edge))
 
 @export
-(defgeneric connect (searchable-node-from searchable-node-to
-                     &rest keys &key &allow-other-keys))
+(defgeneric connect (searchable-node-from searchable-node-to))
 
 @export
 (defgeneric generic-eq (thing1 thing2))
@@ -100,12 +99,8 @@ searching. any subclass of `searchable-edge' should implement a method
 (defpattern edge (from to)
   `(class searchable-edge (to ,to) (from ,from)))
 
-(defmethod connect ((from searchable-node) (to searchable-node)
-                    &rest keys &key &allow-other-keys)
-  (let ((e (apply #'make-instance
-                  (complementary-edge-class from)
-                  :from from :to to
-                  keys)))
+(defmethod connect ((from searchable-node) (to searchable-node))
+  (let ((e (make-instance (complementary-edge-class from) :from from :to to)))
     (push e (edges from))
     e))
 

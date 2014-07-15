@@ -4,11 +4,15 @@
 
 (defgeneric draw (thing))
 
-(defmethod draw ((e 2d-edge))
-  (ematch (edge-from e)
+(defmethod draw ((e searchable-edge))
+  (match e
+    ((edge from to) (draw2 from to))))
+
+(defun draw2 (from to)
+  (ematch from
     ((2d x y)
      (move-to x y)))
-  (ematch (edge-to e)
+  (ematch to
     ((2d x y)
      (line-to x y)))
   (stroke))

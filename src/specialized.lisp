@@ -39,9 +39,9 @@
 (defstruct (unit-cost-edge (:include searchable-edge)
                            (:constructor unit-cost-edge (from to))))
 (defclass unit-cost-node (searchable-node) ())
-(defmethod cost ((e discrete-cost-edge))
-  @inline discrete-cost-edge-cost
-  (discrete-cost-edge-cost e))
+(defmethod cost ((e unit-cost-edge))
+  @inline unit-cost-edge-cost
+  (unit-cost-edge-cost e))
 (defmethod connect ((from unit-cost-node) (to unit-cost-node))
   (let ((e (unit-cost-edge from to)))
     (push e (edges from))

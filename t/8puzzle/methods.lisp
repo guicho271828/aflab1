@@ -24,5 +24,3 @@
        (format s "~_~<~;~a ~a ~a~%~0:t~a ~a ~a~%~0:t~a ~a ~a~;~:> :cost ~a"
 	       (coerce state 'list) cost)))))
 
-(defmethod cost ((e 8puzzle-edge))
-  1)

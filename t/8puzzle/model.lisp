@@ -4,17 +4,13 @@
 
 (defvar +goal-state+ (vector 0 1 2 3 4 5 6 7 8))
 
-(defclass 8puzzle-node (searchable-node)
-  ((complementary-edge-class :initform '8puzzle-edge)
-   (state :accessor state :initarg :state
+(defclass 8puzzle-node (unit-cost-node)
+  ((state :accessor state :initarg :state
 	  :type (simple-array fixnum 9))
    (pos :accessor pos :type :fixnum :initarg :position)))
 
 (defpattern 8puzzle (state pos &optional (class '8puzzle-node))
   `(class ,class (state ,state) (pos ,pos)))
-
-(defclass 8puzzle-edge (searchable-edge)
-  ((complementary-node-class :initform '8puzzle-node)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;variants

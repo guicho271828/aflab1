@@ -53,7 +53,16 @@
 	:annot.doc
 	:optima
 	:optima.extra)
-  (:export :edge :node)
+  (:export :edge :node
+           :searchable-edge
+           :searchable-edge-to
+           :searchable-edge-from
+           :searchable-edge-p
+           :edge-to
+           :edge-from
+           :unit-cost-node
+           :unit-cost-edge
+           :unit-cost-edge-cost)
   (:nicknames :guicho-a*))
 (in-package :guicho-a-star)
 

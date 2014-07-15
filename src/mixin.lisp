@@ -76,6 +76,9 @@ Any subclass of `searchable-edge' should implement a method
   from
   to)
 
+(setf (fdefinition 'edge-to) (function searchable-edge-to)
+      (fdefinition 'edge-from) (function searchable-edge-from))
+
 (defmethod print-object ((e searchable-edge) s)
   (print-unreadable-object (e s :type t)
     (with-slots (to from) e

@@ -19,7 +19,7 @@ It is implicitly  called by a method `slot-unbound' on slot `edges' of a node."
 (defgeneric cost (searchable-edge))
 
 @export
-(defgeneric connect (searchable-node-from searchable-node-to))
+(defgeneric connect (from to))
 
 @export
 (defgeneric generic-eq (thing1 thing2))
@@ -69,8 +69,8 @@ check for the duplicates in a way that fits to the structure
      (generate-nodes node))))
 
 (defstruct (searchable-edge (:constructor searchable-edge (from to)))
-  "an edge used in lrta*/rta*
-searching. any subclass of `searchable-edge' should implement a method
+  "Edges for a*/lrta*/rta* etc.
+Any subclass of `searchable-edge' should implement a method
 `cost'.  Also, accessor EDGE-TO and EDGE-FROM should return a
 `searchable-node' instance."
   from

@@ -22,6 +22,6 @@
 (defpattern double-float-cost-edge (from to cost)
   `(structure double-float-cost-edge- (from ,from) (to ,to) (cost ,cost)))
 
-(defpattern unit-cost-edge (from to)
+(defpattern unit-cost-edge (from to cost)
   `(structure unit-cost-edge- (from ,from) (to ,to) (cost ,cost)))
 

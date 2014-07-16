@@ -19,7 +19,7 @@
 (defmethod print-object ((8p 8puzzle-node) s)
   (print-unreadable-object (8p s :type t)
     (match 8p
-      ((and (8puzzle (and state (vector a b c d e f g h i)) _)
+      ((and (8puzzle (and state (vector _ _ _ _ _ _ _ _ _)) _)
 	    (node _ _ cost))
        (format s "~_~<~;~a ~a ~a~%~0:t~a ~a ~a~%~0:t~a ~a ~a~;~:> :cost ~a"
 	       (coerce state 'list) cost)))))

@@ -5,9 +5,17 @@
 ;; generic functions
 
 @export
-@doc "Users do not call this function.
-It is implicitly  called by a method `slot-unbound' on slot `edges' of a node."
+@doc "Generate node instances.
+Users do not call this function.
+It is implicitly  called by a method `generate-edges' which is called by
+ `slot-unbound' on slot `edges' of a node."
 (defgeneric generate-nodes (searchable-node))
+
+@export
+@doc "Generate edge instances.
+Users do not call this function.
+It is implicitly  called by a method `slot-unbound' on slot `edges' of a node."
+(defgeneric generate-edges (searchable-node))
 
 @export
 @doc "gives the heuristic cost (not real cost) between the two nodes."
@@ -63,10 +71,13 @@ check for the duplicates in a way that fits to the structure
                          (slot (eql 'edges)))
   (with-slots (edges) node
     (setf edges nil)
-    (mapcar
-     (lambda (new)
-       (connect node new))
-     (generate-nodes node))))
+    (generate-edges node)))
+
+(defmethod generate-edges ((node searchable-node))
+  (map 'list
+       (lambda (new)
+         (connect node new))
+       (generate-nodes node)))
 
 (defstruct (searchable-edge (:constructor searchable-edge (from to)))
   "Edges for a*/lrta*/rta* etc.

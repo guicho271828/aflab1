@@ -1,6 +1,9 @@
-* Guicho-A-Star  - 
+* Eazy-A-Star  - 
 
-** Usage
+General purpose A* search.
+
++ Obtain the speed by inlining the function!
++ CLOS version is provided!
 
 ** Dependencies
 
@@ -19,21 +22,15 @@ Also, it depends on the following libraries:
 + CL-ANNOT by Tomohiro Matsuyama ::
     Python-like Annotation Syntax for Common Lisp
 
-+ ANAPHORA  ::
++ CL-SYNTAX by Tomohiro Matsuyama ::
     
 
-
-
-** Installation
-
++ OPTIMA by Tomohiro Matsuyama ::
+    ML Style pattern matching library
 
 ** Author
 
-+ guicho ()
-
-* Copyright
-
-Copyright (c) 2013 guicho ()
++ Masataro Asai (guicho2.71828@gmail.com)
 
 
 * License

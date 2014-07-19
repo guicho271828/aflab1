@@ -6,7 +6,6 @@
 	:guicho-red-black-tree
 	:alexandria
 	:iterate
-	:anaphora
 	:vecto
 	:guicho-utilities
 	:local-time

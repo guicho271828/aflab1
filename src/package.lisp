@@ -44,9 +44,7 @@
   (:use :cl
 	:iterate
 	:alexandria
-	:anaphora
 	:guicho-utilities
-        :bordeaux-threads
 	:guicho-red-black-tree
 	:annot
 	:annot.class

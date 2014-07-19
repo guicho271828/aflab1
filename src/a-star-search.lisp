@@ -3,8 +3,6 @@
 ;; (optimize*)
 (cl-syntax:use-syntax :annot)
 
-(defvar *print-lock* (make-lock "IO Stream lock"))
-
 @export
 (define-condition path-not-found (condition)
   ()
@@ -25,32 +23,26 @@
 
 (define-local-function %print-start (start)
   (when verbose
-    (with-lock-held (*print-lock*)
-      (format t
-              "~2%~4tStart searching : ~w ~& Initial minf* = ~a"
-              start minimum-f))))
+    (format t
+            "~2%~4tStart searching : ~w ~& Initial minf* = ~a"
+            start minimum-f)))
 
 (define-local-function %print-update-f* (f* open closed)
   (when verbose
     (when (< minimum-f f*)
-      (with-lock-held (*print-lock*)
-        (format t
-                "~& thread ~x: minf* = ~a , open = ~a, closed = ~a"
-                (position (current-thread) (all-threads))
-                f* (queue-length open) (queue-length closed)))
+      (format t "~& minf* = ~a , open = ~a, closed = ~a"
+              f* (queue-length open) (queue-length closed))
       (setf minimum-f f*))))
 
 (define-local-function %print-solution-found (open closed)
   (when verbose
-    (with-lock-held (*print-lock*)
-      (format t "~& Solution found! ~& Node expanded: ~a"
-              (+ (queue-length open)
-                 (queue-length closed))))))
+    (format t "~& Solution found! ~& Node expanded: ~a"
+            (+ (queue-length open)
+               (queue-length closed)))))
 
 (define-local-function %print-keep-searching ()
   (when verbose
-    (with-lock-held (*print-lock*)
-      (format t "~& Keep searching ..."))))
+    (format t "~& Keep searching ...")))
 
 ;;;; main definition
 (progn

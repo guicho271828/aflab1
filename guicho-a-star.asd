@@ -23,9 +23,7 @@ Author: guicho ()
 		:alexandria
 		:cl-annot
 		:guicho-utilities
-                :bordeaux-threads
-		:cl-syntax-annot
-		:anaphora)
+		:cl-syntax-annot)
   :components ((:module "src"
 			:serial t
 			:components

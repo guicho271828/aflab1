@@ -14,8 +14,7 @@
   :depends-on (:guicho-a-star
 	       :fiveam
 	       :vecto
-	       :local-time
-               :cl-test-more)
+	       :local-time)
   :components ((:module "t"
                 :serial t
                 :components

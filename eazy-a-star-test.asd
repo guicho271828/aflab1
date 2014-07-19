@@ -1,17 +1,16 @@
 #|
-  This file is a part of guicho-a-star project.
+  This file is a part of eazy-a-star project.
   Copyright (c) 2013 guicho ()
 |#
-(require :fiveam)
 (in-package :cl-user)
-(defpackage guicho-a-star-test-asd
+(defpackage eazy-a-star-test-asd
   (:use :cl :asdf))
-(in-package :guicho-a-star-test-asd)
+(in-package :eazy-a-star-test-asd)
 
-(defsystem guicho-a-star-test
+(defsystem eazy-a-star-test
   :author "guicho"
   :license "LLGPL"
-  :depends-on (:guicho-a-star
+  :depends-on (:eazy-a-star
 	       :fiveam
 	       :vecto
 	       :local-time)
@@ -32,5 +31,5 @@
                            (:file :ops)
                            (:file :test))))))
   :perform (load-op :after (op c) 
-		    (eval (read-from-string "(fiveam:run! :guicho-a-star)"))
+		    (eval (read-from-string "(fiveam:run! :eazy-a-star)"))
 		    (asdf:clear-system c)))

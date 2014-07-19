@@ -1,5 +1,5 @@
 #|
-This file is a part of guicho-a-star project.
+This file is a part of eazy-a-star project.
 Copyright (c) 2013 guicho ()
 |#
 
@@ -10,11 +10,11 @@ Author: guicho ()
 |#
 
 (in-package :cl-user)
-(defpackage guicho-a-star-asd
+(defpackage eazy-a-star-asd
   (:use :cl :asdf))
-(in-package :guicho-a-star-asd)
+(in-package :eazy-a-star-asd)
 
-(defsystem guicho-a-star
+(defsystem eazy-a-star
   :version "0.1"
   :author "guicho"
   :license "LLGPL"
@@ -47,4 +47,4 @@ Author: guicho ()
                                :fill-pointer t)))
           (setf (fill-pointer seq) (read-sequence seq stream))
           seq)))
-  :in-order-to ((test-op (load-op guicho-a-star-test))))
+  :in-order-to ((test-op (load-op eazy-a-star-test))))

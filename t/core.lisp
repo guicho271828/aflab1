@@ -1,7 +1,7 @@
 
 
-(in-package :guicho-a-star-test)
-(def-suite :core :in :guicho-a-star)
+(in-package :eazy-a-star-test)
+(def-suite :core :in :eazy-a-star)
 (in-suite :core)
 
 (test heuristic-cost-between

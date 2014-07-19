@@ -1,5 +1,5 @@
 
-(in-package :guicho-a-star-test)
+(in-package :eazy-a-star-test)
 
 (defclass 2d-node (fixed-cost-node)
   ((x :accessor x :initarg :x :type number)

@@ -1,11 +1,11 @@
 #|
-This file is a part of guicho-a-star project.
+This file is a part of eazy-a-star project.
 Copyright (c) 2013 guicho ()
 |#
 
-(in-package :guicho-a-star-test)
+(in-package :eazy-a-star-test)
 
-(def-suite :a-star :in :guicho-a-star)
+(def-suite :a-star :in :eazy-a-star)
 (in-suite :a-star)
 
 ;; blah blah blah.
@@ -70,10 +70,10 @@ Copyright (c) 2013 guicho ()
                (draw-path last)))
         (ensure-directories-exist
          (asdf:system-relative-pathname
-          :guicho-a-star
+          :eazy-a-star
           "result/"))
         (save-png (asdf:system-relative-pathname
-                   :guicho-a-star
+                   :eazy-a-star
                    (format nil "result/~a.png" (now))))))))
 
 (defparameter *samples* (make-samples 1000 *max*))

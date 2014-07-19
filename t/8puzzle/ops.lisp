@@ -1,6 +1,6 @@
 
 
-(in-package :guicho-a-star-test)
+(in-package :eazy-a-star-test)
 (cl-syntax:use-syntax :annot)
 (declaim (inline swap-array))
 (defun swap-array (pos1 pos2 ary)

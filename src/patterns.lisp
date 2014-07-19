@@ -1,5 +1,5 @@
 
-(in-package :guicho-a*)
+(in-package :eazy-a*)
 (cl-syntax:use-syntax :annot)
 
 (defpattern node (edges parent cost)

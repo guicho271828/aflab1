@@ -1,8 +1,8 @@
 
 (in-package :cl-user)
-(defpackage guicho-a-star-test
+(defpackage eazy-a-star-test
   (:use :cl
-	:guicho-a*
+	:eazy-a*
 	:guicho-red-black-tree
 	:alexandria
 	:iterate
@@ -14,5 +14,5 @@
 	:fiveam)
   (:shadow :rotate :fail))
 
-(in-package :guicho-a-star-test)
-(def-suite :guicho-a-star)
+(in-package :eazy-a-star-test)
+(def-suite :eazy-a-star)

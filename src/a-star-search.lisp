@@ -1,4 +1,4 @@
-(in-package :guicho-a*)
+(in-package :eazy-a*)
 (speed*)
 ;; (optimize*)
 (cl-syntax:use-syntax :annot)

@@ -1,5 +1,5 @@
 
-(in-package :guicho-a-star-test)
+(in-package :eazy-a-star-test)
 (cl-syntax:use-syntax :annot)
 
 (defmethod generic-eq ((n1 8puzzle-node) (n2 8puzzle-node))

@@ -1,5 +1,5 @@
 #|
-  This file is a part of guicho-a-star project.
+  This file is a part of eazy-a-star project.
   Copyright (c) 2013 guicho ()
 |#
 
@@ -40,7 +40,7 @@
            :rb-remove-before
            ))
 
-(defpackage guicho-a-star
+(defpackage eazy-a-star
   (:use :cl
 	:iterate
 	:alexandria
@@ -63,8 +63,8 @@
            :unit-cost-node
            :unit-cost-edge
            :unit-cost-edge-cost)
-  (:nicknames :guicho-a*))
-(in-package :guicho-a-star)
+  (:nicknames :eazy-a*))
+(in-package :eazy-a-star)
 
 ;; blah blah blah.
 

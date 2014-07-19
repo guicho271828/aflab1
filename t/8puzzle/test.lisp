@@ -1,6 +1,6 @@
 
-(in-package :guicho-a-star-test)
-(def-suite :8puzzle :in :guicho-a-star)
+(in-package :eazy-a-star-test)
+(def-suite :8puzzle :in :eazy-a-star)
 (in-suite :8puzzle)
 
 (test :generate-nodes

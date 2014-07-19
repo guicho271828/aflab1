@@ -1,6 +1,6 @@
 
 
-(in-package :guicho-a-star-test)
+(in-package :eazy-a-star-test)
 
 (defgeneric draw (thing))
 

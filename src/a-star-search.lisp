@@ -60,7 +60,7 @@
       ((rb-node _ _ f* list _)
        (%print-update-f* f* open closed)
        (destructuring-bind (now . rest)
-           (if tiebreak (sort list #'< :key tiebreak) list)
+           (if tiebreak (funcall tiebreak list) list)
          (if (goal-p now)
              (progn
                (%print-solution-found open closed)
@@ -126,89 +126,117 @@
   (deftype equality (&optional (arg t))
     `(function (,arg ,arg) boolean))
 
-  (declaim (ftype (function (t &key 
-                               (:verbose boolean)
-                               (:test (equality t))
-                               (:edges (function (t) list))
-                               (:goal-p (predicate t))
-                               (:h (function (t) (rational 0)))
-                               (:c (function (t) (rational 0)))
-                               (:g (function (t) (rational 0)))
-                               (:set-g (function ((rational 0) t) (rational 0)))
-                               (:set-parent (function (t t) t))
-                               (:tiebreak (function (t) (rational 0)))) t)
+  (declaim (ftype (function (t                   ; start
+                             (predicate t)       ; goal-p
+                             (equality t)        ; test
+                             (function (t) list) ; edges
+                             (function (t) (rational 0)) ; h
+                             (function (t) (rational 0)) ; c
+                             (function (t) (rational 0)) ; g
+                             (function ((rational 0) t) (rational 0)) ; set-g
+                             (function (t t) t) ;set-parent
+                             &key
+                             (:verbose boolean)
+                             (:tiebreak (or null (function (list) list))))
+                            t)
                   a*-search))
 
 
   @export
-  @doc "Conduct an A* search. signals SOLUTION-FOUND (<< condition) when a solution is found,
- or PATH-NOT-FOUND (<< condition) otherwise. If the condition is not handled, it normally
+  @doc "
+Conduct an A* search. signals SOLUTION-FOUND when a solution is found,
+ or PATH-NOT-FOUND otherwise. If the condition is not handled, it normally
  returns with the last node of the path, or nil when no solution was found.
 
-The &key arguments are: verbose, test, h, c, g.
-For h, c and g, if they are not provided, it assumes
-the given arguments have the corresponding CLOS method
- `heuristic-cost-between node node', `cost edge', `cost node'.
-
- h : give a heuristic function. if h is not provided, it assumes the nodes
-     has the corresponding CLOS method `heuristic-cost-between'.
- c : give a cost function for edges.
- g : give the current shortest path from the start to the node.
-
 Condition `solution-found' is associated with  a `continue' restart, invoking of which
-lets the search continue for another solution."
-  (defun a*-search (start
-                    &key verbose
-                      test edges goal-p
-                      h c g set-g set-parent tiebreak)
-    (declare (optimize (speed 3) (debug 0) (safety 0) (space 0)))
+lets the search continue for another solution.
+
+The arguments:
+
++ start :: The initial search node.
++ verbose :: if non-NIL print various information (e.g. the current best f*) during the search.
++ test :: binary function returning boolean for testing the node equality.
++ edges :: node -> (list edge). If the edges are not yet
+           instantiated, it should generate them.
++ goal-p :: node -> boolean. =a*-search= signals SOLUTION-FOUND if it is satisfied by some node.
++ h :: node -> (rational 0). Computes a heuristic value for a node.
++ c :: edge -> (rational 0), reader function for an edge. Returns a cost function for edges.
++ g :: node -> (rational 0), reader function for a node. Returns the current
+       shortest path from the start to the node.
++ (setf set-g) :: (rational 0), node -> (rational 0), writer function for a node.
+                  Set the current shortest path from the start to the node.
++ (setf set-parent) :: node n1, node n2 -> node n1, writer function for a node n2.
+     Set the neighbor node n1 that yields the current shortest path as a parent node
+     of n2.
++ tiebreak :: NIL, or (list node) -> (list node).
+              If provided, sort the list of nodes of the same f*
+              values. It may destructively modify the given list.
+"
+  (defun a*-search (start goal-p test edges
+                    h c g set-g set-parent
+                    &key verbose tiebreak)
     (declare (dynamic-extent verbose test edges goal-p h c g set-g set-parent tiebreak))
-    (declare (type boolean verbose))
-    (declare (type (equality t) test))
-    (declare (type (function (t) list) edges))
-    (declare (type (predicate t) goal-p))
-    (declare (type (function (t) (rational 0)) h c g tiebreak))
-    (declare (type (function ((rational 0) t) (rational 0)) set-g))
-    (declare (type (function (t t) t) set-parent))
-    (flet ((edges (c) (funcall edges c))
-           (h (a) (funcall h a))
-           (c (edge) (funcall c edge))
-           (goal-p (a) (funcall goal-p a))
-           ((setf g) (newval node) (funcall set-g newval node))
-           (g (node) (funcall g node))
-           ((setf parent) (newval node) (funcall set-parent newval node)))
-      (declare (dynamic-extent #'edges #'h #'c #'g #'goal-p #'(setf g) #'(setf parent)))
-      (declare (ftype (function (t) (rational 0)) g))
-      (declare (ftype (function ((rational 0) t) t) (setf g)))
-      (declare (ftype (function (t t) t)  (setf parent)))
-      (declare (ftype (function ((rational 0) (or leaf red-black-node)) list) rb-member))
-      (declare (inline g (setf g) (setf parent)))
-      (let ((minimum-f 0))
-        (more-labels () (%search
-                         %rec %iter-edge
-                         %print-start
-                         %print-update-f*
-                         %print-solution-found
-                         %print-keep-searching)
-          (declare (inline %search))
-          (declare (dynamic-extent #'%search #'%rec #'%iter-edge))
-          (%search start)))))
+    (locally
+        (declare (optimize (speed 3) (debug 0) (safety 0) (space 0)))
+      (flet ((goal-p (a) (funcall goal-p a))
+             (edges (c) (funcall edges c))
+             (h (a) (funcall h a))
+             (c (edge) (funcall c edge))
+             (g (node) (funcall g node))
+             ((setf g) (newval node) (funcall set-g newval node))
+             ((setf parent) (newval node) (funcall set-parent newval node)))
+        (declare (dynamic-extent #'edges #'h #'c #'g #'goal-p #'(setf g) #'(setf parent)))
+        (declare (ftype (function ((rational 0) (or leaf red-black-node)) list) rb-member))
+        (declare (inline goal-p edges h c g (setf g) (setf parent))) 
+        (let ((minimum-f 0))
+          (more-labels () (%search
+                           %rec %iter-edge
+                           %print-start
+                           %print-update-f*
+                           %print-solution-found
+                           %print-keep-searching)
+            (declare (inline %search))
+            (declare (dynamic-extent #'%search #'%rec #'%iter-edge))
+            (%search start))))))
  (declaim (notinline a*-search))
 
   @export
-  (defun a*-search-clos (start end &key (verbose t))
-    (declare (inline a*-search))
-    (a*-search
-     start
-     :verbose verbose
-     :test #'generic-eq
-     :edges #'edges
-     :h (rcurry #'heuristic-cost-between end)
-     :c #'cost
-     :goal-p (curry #'generic-eq end)
-     :g #'cost
-     :set-g #'(setf cost)
-     :set-parent #'(setf parent)
-     :tiebreak #'constraint-ordering-op))
+  @doc "
+It requires following methods for the node classes are provided:
 
-  (declaim (notinline a*-search-clos))) 
++ #'heuristic-cost-between
++ #'generic-eq
++ #'constraint-ordering-op
++ #'edges
++ #'cost
++ #'(setf cost)
++ #'(setf parent)
+
+If goal-p-or-goal is a node, it uses #'generic-eq on the node
+to determine the goal condition and
+it uses #'heuristic-cost-between the current search node and the goal-p-or-goal
+as the heuristic value of the node.
+
+If goal-p-or-goal is a function, it uses the function as a goal condition,
+and since no explicit information for a goal is provided, it requires
+heuristic-fn to compute f*. If heuristic-fn is not provided, it uses (constantly
+0), which means it actually runs a dijksrtra search."
+  (defun a*-search-clos (start goal-p-or-goal &key (verbose t) (heuristic-fn (constantly 0)))
+    (declare (inline a*-search))
+    (a*-search start
+               (if (functionp goal-p-or-goal)
+                   goal-p-or-goal
+                   (curry #'generic-eq goal-p-or-goal))
+               #'generic-eq
+               #'edges
+               (if (functionp goal-p-or-goal)
+                   heuristic-fn
+                   (rcurry #'heuristic-cost-between goal-p-or-goal))
+               #'cost
+               #'cost
+               #'(setf cost)
+               #'(setf parent)
+               :verbose verbose
+               :tiebreak (lambda (list)
+                           (sort list #'< :key #'constraint-ordering-op))))
+  (declaim (notinline a*-search-clos)))

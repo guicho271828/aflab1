@@ -5,6 +5,88 @@ General purpose A* search.
 + Obtain the speed by inlining the function!
 + CLOS version is provided!
 
+** EAZY-A-STAR:A*-SEARCH
+
+A*-SEARCH (start &key verbose test edges goal-p h c g set-g set-parent tiebreak)
+
+Declared type:
+
+#+BEGIN_SRC lisp
+(deftype predicate (&optional (arg t))
+  `(function (,arg) boolean))
+(deftype equality (&optional (arg t))
+  `(function (,arg ,arg) boolean))
+
+(function (t &key 
+             (:verbose boolean)
+             (:test (equality t))
+             (:edges (function (t) list))
+             (:goal-p (predicate t))
+             (:h (function (t) (rational 0)))
+             (:c (function (t) (rational 0)))
+             (:g (function (t) (rational 0)))
+             (:set-g (function ((rational 0) t) (rational 0)))
+             (:set-parent (function (t t) t))
+             (:tiebreak (function (t) (rational 0)))) t)
+#+END_SRC
+
+Conduct an A* search. signals SOLUTION-FOUND when a solution is found,
+ or PATH-NOT-FOUND otherwise. If the condition is not handled, it normally
+ returns with the last node of the path, or nil when no solution was found.
+
+Condition `solution-found' is associated with  a `continue' restart, invoking of which
+lets the search continue for another solution.
+
+The arguments:
+
++ start :: The initial search node.
++ verbose :: if non-NIL print various information (e.g. the current best f*) during the search.
++ test :: binary function returning boolean for testing the node equality.
++ edges :: node -> (list edge). If the edges are not yet
+           instantiated, it should generate them.
++ goal-p :: node -> boolean. =a*-search= signals SOLUTION-FOUND if it is satisfied by some node.
++ h :: node -> (rational 0). Computes a heuristic value for a node.
++ c :: edge -> (rational 0), reader function for an edge. Returns a cost function for edges.
++ g :: node -> (rational 0), reader function for a node. Returns the current
+       shortest path from the start to the node.
++ (setf set-g) :: (rational 0), node -> (rational 0), writer function for a node.
+                  Set the current shortest path from the start to the node.
++ (setf set-parent) :: node n1, node n2 -> node n1, writer function for a node n2.
+     Set the neighbor node n1 that yields the current shortest path as a parent node
+     of n2.
++ tiebreak :: NIL, or (list node) -> (list node).
+              If provided, sort the list of nodes of the same f*
+              values. It may destructively modify the given list.
+
+Inline proclamation: NOTINLINE (inline expansion available)
+
+** EAZY-A-STAR:A*-SEARCH-CLOS
+
+A*-SEARCH-CLOS (start goal-p-or-goal &key verbose (h (constantly 0)))
+
+CLOS interface.
+
+It requires following methods for the node classes are provided:
+
++ #'heuristic-cost-between
++ #'generic-eq
++ #'constraint-ordering-op
++ #'edges
++ #'cost
++ #'(setf cost)
++ #'(setf parent)
+
+If goal-p-or-goal is a node, it uses #'generic-eq on the node
+to determine the goal condition and
+it uses #'heuristic-cost-between the current search node and the goal-p-or-goal
+as the heuristic value of the node.
+
+If goal-p-or-goal is a function, it uses the function as a goal condition,
+and since no explicit information for a goal is provided, it requires
+heuristic-fn to compute f*. If heuristic-fn is not provided, it uses (constantly
+0), which means it actually runs a dijksrtra search.
+
+
 ** Dependencies
 
 This library is at least tested on implementation listed below:

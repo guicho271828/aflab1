@@ -12,31 +12,62 @@
 
 @export
 (defun append-queue (priority things queue)
-  (rb-insert queue priority
-	     (append things (rb-member priority queue))))
+  (match (rb-member-node priority queue)
+    ((rb-node _ _ _ content _)
+     (rb-insert queue priority (append things content)))
+    (nil
+     (rb-insert queue priority things))))
 
 @export
 (defun insert-queue (priority thing queue)
-  (if-let ((node (rb-member-node priority queue)))
-    (progn (push thing (red-black-node-content node))
-	   queue)
-    (rb-insert queue priority (list thing))))
+  (match (rb-member-node priority queue)
+    ((rb-node _ _ _ content _)
+     (rb-insert queue priority (cons thing content)))
+    (nil
+     (rb-insert queue priority (list thing)))))
+
+@export
+(defun pop-queue (priority queue)
+  (match (rb-member-node priority queue)
+    ((rb-node _ _ _ (list popped) _)
+     (values popped (rb-remove queue priority)))
+    ((rb-node _ _ _ (list* popped rest) _)
+     (values popped (rb-insert queue priority rest)))
+    (nil (values nil queue))))
+
+@export
+(defun pop-queue-minimum (queue)
+  (match (rb-minimum-node queue)
+    ((leaf) (values nil queue))
+    ((rb-node _ _ priority (list popped) _)
+     (values popped (rb-remove queue priority)))
+    ((rb-node _ _ priority (list* popped rest) _)
+     (values popped (rb-insert queue priority rest)))))
+
+@export
+(defun pop-queue-maximum (queue)
+  (match (rb-maximum-node queue)
+    ((leaf) (values nil queue))
+    ((rb-node _ _ priority (list popped) _)
+     (values popped (rb-remove queue priority)))
+    ((rb-node _ _ priority (list* popped rest) _)
+     (values popped (rb-insert queue priority rest)))))
 
 @export
 (defun remove-queue (priority thing queue)
-  (when-let ((node (rb-member-node priority queue)))
-    (removef (red-black-node-content node) thing))
-  queue)
+  (match (rb-member-node priority queue)
+    ((rb-node _ _ _ content _)
+     (rb-insert queue priority (remove thing content)))
+    (nil queue)))
 
-(declaim (ftype (function ((or red-black-node leaf)) fixnum) queue-length))
+(declaim (ftype (function (rb-tree) (integer 0)) queue-length))
 @export
 (defun queue-length (tree)
-  (declare (optimize (debug 0) (safety 0) (space 0) (speed 3)))
   (match tree
     ((rb-node _ left _ content right)
-     (the fixnum
-         ;;(declare (ftype (function (&rest fixnum) fixnum) +))
-         (+ (the fixnum (+ (queue-length left)
-                           (queue-length right)))
-            (the fixnum (length (the list content))))))
+     (declare (type rb-tree left right))
+     (declare (type list content))
+     (+ (queue-length left)
+        (queue-length right)
+        (length content)))
     ((leaf) 0)))

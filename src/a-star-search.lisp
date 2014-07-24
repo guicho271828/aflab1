@@ -64,7 +64,10 @@
          (if (goal-p now)
              (progn
                (%print-solution-found open closed)
-               (restart-case (progn (signal 'solution-found :solution now) now)
+               (restart-case
+                   (progn
+                     (signal 'solution-found :solution now)
+                     (values now f*))
                  (continue ()
                    (%print-keep-searching)
                    (%iter-edge (rb-insert open f* rest)
@@ -138,7 +141,7 @@
                              &key
                              (:verbose boolean)
                              (:tiebreak (or null (function (list) list))))
-                            t)
+                            (values t &optional (rational 0)))
                   a*-search))
 
 

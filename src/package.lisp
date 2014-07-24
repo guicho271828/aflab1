@@ -51,7 +51,11 @@
 	:annot.doc
 	:optima
 	:optima.extra)
-  (:export :edge :node
+  (:export :path-not-found
+           :solution-found
+           :solution
+           ;;
+           :edge :node
            :searchable-edge
            :searchable-edge-to
            :searchable-edge-from

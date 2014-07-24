@@ -1,9 +1,7 @@
 (in-package :eazy-a*)
-(speed*)
-;; (optimize*)
+(DECLAIM (OPTIMIZE (DEBUG 1) (SAFETY 1) (SPACE 1) (SPEED 1)))
 (cl-syntax:use-syntax :annot)
 
-@export
 (define-condition path-not-found (condition)
   ()
   (:report
@@ -12,10 +10,6 @@
      (declare (type stream s))
      (format s "a*-search: there is no possible path!"))))
 
-
-@export 'solution
-
-@export
 (define-condition solution-found (condition)
   ((solution :initarg :solution :accessor solution)))
 

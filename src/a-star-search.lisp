@@ -1,5 +1,5 @@
 (in-package :eazy-a*)
-(DECLAIM (OPTIMIZE (DEBUG 1) (SAFETY 1) (SPACE 1) (SPEED 1)))
+;; (DECLAIM (OPTIMIZE (DEBUG 1) (SAFETY 1) (SPACE 1) (SPEED 1)))
 (cl-syntax:use-syntax :annot)
 
 (define-condition path-not-found (condition)
@@ -127,15 +127,15 @@
                              (predicate t)       ; goal-p
                              (equality t)        ; test
                              (function (t) list) ; edges
-                             (function (t) (rational 0)) ; h
-                             (function (t) (rational 0)) ; c
-                             (function (t) (rational 0)) ; g
-                             (function ((rational 0) t) (rational 0)) ; set-g
+                             (function (t) (real 0)) ; h
+                             (function (t) (real 0)) ; c
+                             (function (t) (real 0)) ; g
+                             (function ((real 0) t) (real 0)) ; set-g
                              (function (t t) t) ;set-parent
                              &key
                              (:verbose boolean)
                              (:tiebreak (or null (function (list) list))))
-                            (values t &optional (rational 0)))
+                            (values t &optional (real 0)))
                   a*-search))
 
 
@@ -156,11 +156,11 @@ The arguments:
 + edges :: node -> (list edge). If the edges are not yet
            instantiated, it should generate them.
 + goal-p :: node -> boolean. =a*-search= signals SOLUTION-FOUND if it is satisfied by some node.
-+ h :: node -> (rational 0). Computes a heuristic value for a node.
-+ c :: edge -> (rational 0), reader function for an edge. Returns a cost function for edges.
-+ g :: node -> (rational 0), reader function for a node. Returns the current
++ h :: node -> (real 0). Computes a heuristic value for a node.
++ c :: edge -> (real 0), reader function for an edge. Returns a cost function for edges.
++ g :: node -> (real 0), reader function for a node. Returns the current
        shortest path from the start to the node.
-+ (setf set-g) :: (rational 0), node -> (rational 0), writer function for a node.
++ (setf set-g) :: (real 0), node -> (real 0), writer function for a node.
                   Set the current shortest path from the start to the node.
 + (setf set-parent) :: node n1, node n2 -> node n1, writer function for a node n2.
      Set the neighbor node n1 that yields the current shortest path as a parent node
@@ -183,7 +183,7 @@ The arguments:
              ((setf g) (newval node) (funcall set-g newval node))
              ((setf parent) (newval node) (funcall set-parent newval node)))
         (declare (dynamic-extent #'edges #'h #'c #'g #'goal-p #'(setf g) #'(setf parent)))
-        (declare (ftype (function ((rational 0) (or leaf red-black-node)) list) rb-member))
+        (declare (ftype (function ((real 0) rb-tree) list) rb-member))
         (declare (inline goal-p edges h c g (setf g) (setf parent))) 
         (let ((minimum-f 0))
           (more-labels () (%search

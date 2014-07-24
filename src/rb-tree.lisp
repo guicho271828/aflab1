@@ -5,6 +5,11 @@
 
 ; red-black-tree
 
+
+@export
+(deftype rb-tree ()
+  `(or red-black-node leaf))
+
 (defstruct (leaf (:constructor leaf)))
 
 (defstruct (red-black-node
@@ -12,14 +17,10 @@
 	      rb-node
 	      (color left label content right)))
   (color :red :type symbol)
-  left
-  (label 0 :type rational)
+  (left (leaf) :type rb-tree)
+  (label 0 :type real)
   content
-  right)
-
-@export
-(deftype rb-tree ()
-  `(or red-black-node leaf))
+  (right (leaf) :type rb-tree))
 
 (defmethod print-object ((o leaf) s)
   (format s "LEAF"))
@@ -37,7 +38,7 @@
      (write (list color label content
 		  left right) :stream s))))
 
-(declaim (ftype (function (t rational t t) red-black-node) red black))
+(declaim (ftype (function (t real t t) red-black-node) red black))
 
 (defun red (left label content right)
   (rb-node :red left label content right))
@@ -48,12 +49,12 @@
 (defpattern black (left label content right)
   `(rb-node :black ,left ,label ,content ,right))
 
-(declaim (ftype (function (rational rb-tree) t) rb-member))
+(declaim (ftype (function (real rb-tree) t) rb-member))
 (defun rb-member (x tree)
   (when-let ((node (rb-member-node x tree)))
     (red-black-node-content node)))
 
-(declaim (ftype (function (rational rb-tree) (or null red-black-node)) rb-member-node))
+(declaim (ftype (function (real rb-tree) (or null rb-tree)) rb-member-node))
 (defun rb-member-node (x tree)
   (match tree
     ((leaf) nil)
@@ -73,7 +74,9 @@
      (red (black a x xc b) y yc (black c z zc d)))
     (otherwise tree)))
 
-(declaim (ftype (function (rb-tree) (values rb-tree (or null rational)))
+(declaim (ftype (function (rb-tree)
+                          (values (or null rb-tree)
+                                  (or null real)))
                 rb-minimum-node rb-maximum-node))
 (defun rb-minimum-node (tree)
   (ematch tree
@@ -94,7 +97,7 @@
      (values nil nil))))
 
 
-(declaim (ftype (function (rb-tree) (values t (or rational null)))
+(declaim (ftype (function (rb-tree) (values t (or real null)))
                 rb-minimum rb-maximum))
 
 (defun rb-minimum (tree)
@@ -115,7 +118,9 @@
     ((leaf)
      (values nil nil))))
 
-(declaim (ftype (function (rb-tree rational &optional t) red-black-node) rb-insert))
+(declaim (ftype (function (rb-tree real &optional t)
+                          red-black-node)
+                rb-insert))
 (defun rb-insert (tree x &optional (xc x))
   (labels ((ins (tree)
 	     (match tree
@@ -128,11 +133,11 @@
 		   (balance (rb-node color left label content (ins right))))
 		  (t (rb-node color left label xc right)))))))
     (declare (ftype (function (rb-tree) red-black-node) ins))
-    (match (ins tree)
+    (ematch (ins tree)
       ((rb-node _ left label content right)
        (black left label content right)))))
 
-(declaim (ftype (function (rb-tree) (values rb-tree t (or rational null)))
+(declaim (ftype (function (rb-tree) (values rb-tree t (or real null)))
                 rb-remove-minimum-node))
 (defun rb-remove-minimum-node (tree)
   (let (min-label min-content)
@@ -150,32 +155,35 @@
 	      min-content
 	      min-label))))
 
-(declaim (ftype (function (rb-tree rational) rb-tree) rb-remove))
+(declaim (ftype (function (rb-tree real) rb-tree) rb-remove))
 (defun rb-remove (tree x)
   (labels
       ((rec (tree)
 	 (match tree
-	   ((rb-node color left (guard y (= y x)) _ right)
-            ;; the node was found! the things in the left are smaller and
-            ;; those in the right are larger than x
-	    (multiple-value-ematch (rb-remove-minimum-node right)
-              (((leaf) nil nil)
-               left)
-	      ((subtree content label)
-	       (balance
-		(rb-node color left label content subtree)))))
-	   ((rb-node color left y content right)
-	    (if (< x y)
-                (if (typep left 'leaf)
-                    (balance (rb-node color left y content right))
-                    (balance (rb-node color (rec left) y content right)))
-                (if (typep right 'leaf)
-                    (balance (rb-node color left y content right))
-                    (balance (rb-node color left y content (rec right)))))))))
-    (declare (ftype (function (red-black-node) red-black-node) rec))
+           ((rb-node color left y content right)
+	    (cond
+              ((< x y)
+               (if (leaf-p left)
+                   (balance (rb-node color left y content right))
+                   (balance (rb-node color (rec left) y content right))))
+              ((= x y)
+               ;; the node was found! the things in the left are smaller and
+               ;; those in the right are larger than x
+               (multiple-value-ematch (rb-remove-minimum-node right)
+                 (((leaf) nil nil)
+                  left)
+                 ((subtree content label)
+                  (balance
+                   (rb-node color left label content subtree)))))
+              ((> x y)
+               (if (leaf-p right)
+                   (balance (rb-node color left y content right))
+                   (balance (rb-node color left y content (rec right))))))))))
+    (declare (ftype (function (red-black-node) rb-tree) rec))
     (if (typep tree 'leaf)
         tree
         (match (rec tree)
+          ((and x (leaf)) x)
           ((rb-node _ left y content right)
            (black left y content right))))))
 
@@ -187,9 +195,7 @@
 
 (defun %rb-node-next-node-rec (node tree)
   (match tree
-    ((leaf)
-     tree)
-    
+    ((leaf) tree)
     ((rb-node _ (guard left (eq (rb-maximum-node left) node)) _ _ _)
      tree)
 
@@ -208,12 +214,9 @@
 
 (defun %rb-node-previous-node-rec (node tree)
   (match tree
-    ((leaf)
-     tree)
-    
+    ((leaf) tree)
     ((rb-node _ _ _ _ (guard right (eq (rb-minimum-node right) node)))
      tree)
-
     ((rb-node _ left label _ right)
      (match node
        ((rb-node _ _ x _ _)

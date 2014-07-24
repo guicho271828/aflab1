@@ -54,7 +54,7 @@
   (when-let ((node (rb-member-node x tree)))
     (red-black-node-content node)))
 
-(declaim (ftype (function (real rb-tree) (or null rb-tree)) rb-member-node))
+(declaim (ftype (function (real rb-tree) (or null red-black-node)) rb-member-node))
 (defun rb-member-node (x tree)
   (match tree
     ((leaf) nil)

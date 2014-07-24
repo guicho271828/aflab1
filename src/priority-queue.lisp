@@ -10,13 +10,16 @@
 (defun make-queue ()
   (leaf))
 
+(declaim (ftype (function (real list rb-tree) red-black-node) append-queue))
 @export
 (defun append-queue (priority things queue)
-  (match (rb-member-node priority queue)
-    ((rb-node _ _ _ content _)
-     (rb-insert queue priority (append things content)))
-    (nil
-     (rb-insert queue priority things))))
+  (if things
+      (match (rb-member-node priority queue)
+        ((rb-node _ _ _ content _)
+         (rb-insert queue priority (append things content)))
+        (_ ; leaf
+         (rb-insert queue priority things)))
+      queue))
 
 @export
 (defun insert-queue (priority thing queue)

@@ -43,18 +43,18 @@
   (match (rb-minimum-node queue)
     ((leaf) (values nil queue))
     ((rb-node _ _ priority (list popped) _)
-     (values popped (rb-remove queue priority)))
+     (values popped (rb-remove queue priority) priority))
     ((rb-node _ _ priority (list* popped rest) _)
-     (values popped (rb-insert queue priority rest)))))
+     (values popped (rb-insert queue priority rest) priority))))
 
 @export
 (defun pop-queue-maximum (queue)
   (match (rb-maximum-node queue)
     ((leaf) (values nil queue))
     ((rb-node _ _ priority (list popped) _)
-     (values popped (rb-remove queue priority)))
+     (values popped (rb-remove queue priority) priority))
     ((rb-node _ _ priority (list* popped rest) _)
-     (values popped (rb-insert queue priority rest)))))
+     (values popped (rb-insert queue priority rest) priority))))
 
 @export
 (defun remove-queue (priority thing queue)

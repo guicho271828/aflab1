@@ -28,6 +28,7 @@ Author: guicho ()
 			:serial t
 			:components
 			((:file :package)
+			 (:file :typedefs)
 			 (:file :forward-search)))
                #+nil
                (:module "clos"

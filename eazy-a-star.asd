@@ -33,7 +33,8 @@ Author: guicho ()
                          (:file :patterns)
 			 (:file :rb-tree)
 			 (:file :priority-queue)
-			 (:file :a-star-search))))
+			 (:file :a-star-search)
+                         (:file :clos-interface))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

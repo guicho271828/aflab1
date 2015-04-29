@@ -13,8 +13,7 @@
 (define-condition solution-found (condition)
   ((solution :initarg :solution :accessor solution)))
 
-;; printers
-
+;;; printers
 (define-local-function %print-start (start)
   (when verbose
     (format t
@@ -38,109 +37,139 @@
   (when verbose
     (format t "~& Keep searching ...")))
 
-;;;; main definition
-(progn
-  (define-local-function %search (start)
-    (setf minimum-f (h start))
-    (%print-start start)
-    ;; f*(s) = 0 + h*(s)
-    (%rec (rb-insert (leaf) minimum-f (list start))
-          (leaf)))
+;;; main definition
 
-  (define-local-function %rec (open closed)
-    (match (rb-minimum-node open)
-      ((rb-node _ _ _ nil _)
-       (%rec (rb-remove-minimum-node open) closed))
-      ((rb-node _ _ f* list _)
-       (%print-update-f* f* open closed)
-       (destructuring-bind (now . rest)
-           (if tiebreak (funcall tiebreak list) list)
-         (if (goal-p now)
-             (progn
-               (%print-solution-found open closed)
-               (restart-case
-                   (progn
-                     (signal 'solution-found :solution now)
-                     (values now f*))
-                 (continue ()
-                   (%print-keep-searching)
-                   (%iter-edge (rb-insert open f* rest)
-                               (insert-queue f* now closed)
-                               now (edges now)))))
-             (%iter-edge (rb-insert open f* rest)
-                         (insert-queue f* now closed)
-                         now (edges now)))))
-      (_ (signal 'path-not-found))))
+(define-local-function %search (start)
+  (setf minimum-f (h start))
+  (%print-start start)
+  ;; f*(s) = 0 + h*(s)
+  (%rec (rb-insert (leaf) minimum-f (list start))
+        (leaf)))
 
-  (define-local-function %iter-edge (open closed now edges)
-    (ematch edges
-      ((list)
-       (%rec open closed))
-      ((list* (and e (or (edge (eq now) neighbor)
-                         (edge neighbor (eq now)))) rest)
-       (let* ((h (h neighbor))
-              (old-g* (g neighbor))
-              (old-f* (+ h old-g*))
-              (new-g* (+ (g now) (c e)))
-              (new-f* (+ h new-g*)))
-         (cond
-           ((when-let ((member (rb-member old-f* open)))
-              (find neighbor member :test test))
-            (if (< new-g* old-g*) ; f'(m) < f*(m)
+(define-local-function %rec (open closed)
+  (match (rb-minimum-node open)
+         ((rb-node _ _ _ nil _)
+          (%rec (rb-remove-minimum-node open) closed))
+         ((rb-node _ _ f* list _)
+          (%print-update-f* f* open closed)
+          (destructuring-bind (now . rest)
+              (if tiebreak (funcall tiebreak list) list)
+            (if (goal-p now)
                 (progn
-                  (setf (g neighbor) new-g*
-                        (parent neighbor) now)
-                  (%iter-edge
-                   (insert-queue
-                    new-f* neighbor
-                    (remove-queue
-                     old-f* neighbor open))
-                   closed now rest))
-                (%iter-edge open closed now rest)))
-           ;;
-           ((when-let ((member (rb-member old-f* closed)))
-              (find neighbor member :test test))
-            (if (< new-g* old-g*)
-                (progn
-                  (setf (g neighbor) new-g*
-                        (parent neighbor) now)
+                  (%print-solution-found open closed)
+                  (restart-case
+                      (progn
+                        (signal 'solution-found :solution now)
+                        (values now f*))
+                    (continue ()
+                      (%print-keep-searching)
+                      (%iter-edge (rb-insert open f* rest)
+                                  (insert-queue f* now closed)
+                                  now (edges now)))))
+                (%iter-edge (rb-insert open f* rest)
+                            (insert-queue f* now closed)
+                            now (edges now)))))
+         (_ (signal 'path-not-found))))
+
+(define-local-function %iter-edge (open closed now edges)
+  (ematch edges
+          ((list)
+           (%rec open closed))
+          ((list* (and e (or (edge (eq now) neighbor)
+                             (edge neighbor (eq now)))) rest)
+           (let* ((h (h neighbor))
+                  (old-g* (g neighbor))
+                  (old-f* (+ h old-g*))
+                  (new-g* (+ (g now) (c e)))
+                  (new-f* (+ h new-g*)))
+             (cond
+               ((when-let ((member (rb-member old-f* open)))
+                          (find neighbor member :test test))
+                (if (< new-g* old-g*) ; f'(m) < f*(m)
+                    (progn
+                      (setf (g neighbor) new-g*
+                            (parent neighbor) now)
+                      (%iter-edge
+                       (insert-queue
+                        new-f* neighbor
+                        (remove-queue
+                         old-f* neighbor open))
+                       closed now rest))
+                    (%iter-edge open closed now rest)))
+               ;;
+               ((when-let ((member (rb-member old-f* closed)))
+                          (find neighbor member :test test))
+                (if (< new-g* old-g*)
+                    (progn
+                      (setf (g neighbor) new-g*
+                            (parent neighbor) now)
+                      (%iter-edge
+                       (insert-queue new-f* neighbor open)
+                       (remove-queue old-f* neighbor closed)
+                       now rest))
+                    (%iter-edge open closed now rest)))
+               ;;
+               (t (setf (g neighbor) new-g*)
+                  (setf (parent neighbor) now)
                   (%iter-edge
                    (insert-queue new-f* neighbor open)
-                   (remove-queue old-f* neighbor closed)
-                   now rest))
-                (%iter-edge open closed now rest)))
-           ;;
-           (t (setf (g neighbor) new-g*)
-              (setf (parent neighbor) now)
-              (%iter-edge
-               (insert-queue new-f* neighbor open)
-               closed now rest)))))))
+                   closed now rest)))))))
 
-  (declaim (inline a*-search a*-search-clos))
+(declaim (inline a*-search a*-search-clos))
 
-  (deftype predicate (&optional (arg t))
-    `(function (,arg) boolean))
-  (deftype equality (&optional (arg t))
-    `(function (,arg ,arg) boolean))
+(deftype predicate (&optional (arg t))
+  `(function (,arg) boolean))
+(deftype equality (&optional (arg t))
+  `(function (,arg ,arg) boolean))
 
-  (declaim (ftype (function (t                   ; start
-                             (predicate t)       ; goal-p
-                             (equality t)        ; test
-                             (function (t) list) ; edges
-                             (function (t) (real 0)) ; h
-                             (function (t) (real 0)) ; c
-                             (function (t) (real 0)) ; g
-                             (function ((real 0) t) (real 0)) ; set-g
-                             (function (t t) t) ;set-parent
-                             &key
-                             (:verbose boolean)
-                             (:tiebreak (or null (function (list) list))))
-                            (values t &optional (real 0)))
-                  a*-search))
+(declaim (ftype (function (t                   ; start
+                           (predicate t)       ; goal-p
+                           (equality t)        ; test
+                           (function (t) list) ; edges
+                           (function (t) (real 0)) ; h
+                           (function (t) (real 0)) ; c
+                           (function (t) (real 0)) ; g
+                           (function ((real 0) t) (real 0)) ; set-g
+                           (function (t t) t) ;set-parent
+                           &key
+                           (:verbose boolean)
+                           (:tiebreak (or null (function (list) list))))
+                          (values t &optional (real 0)))
+                a*-search))
 
 
-  @export
-  @doc "
+@export
+(defun a*-search (start goal-p test edges
+                  h c g set-g set-parent
+                  &key verbose tiebreak)
+  (declare (dynamic-extent verbose test edges goal-p h c g set-g set-parent tiebreak))
+  (locally
+      (declare (optimize (speed 3) (debug 0) (safety 0) (space 0)))
+    (flet ((goal-p (a) (funcall goal-p a))
+           (edges (c) (funcall edges c))
+           (h (a) (funcall h a))
+           (c (edge) (funcall c edge))
+           (g (node) (funcall g node))
+           ((setf g) (newval node) (funcall set-g newval node))
+           ((setf parent) (newval node) (funcall set-parent newval node)))
+      (declare (dynamic-extent #'edges #'h #'c #'g #'goal-p #'(setf g) #'(setf parent)))
+      (declare (ftype (function ((real 0) rb-tree) list) rb-member))
+      (declare (inline goal-p edges h c g (setf g) (setf parent))) 
+      (let ((minimum-f 0))
+        (more-labels () (%search
+                         %rec %iter-edge
+                         %print-start
+                         %print-update-f*
+                         %print-solution-found
+                         %print-keep-searching)
+                     (declare (inline %search))
+                     (declare (dynamic-extent #'%search #'%rec #'%iter-edge))
+                     (%search start))))))
+(declaim (notinline a*-search))
+
+
+(setf (documentation 'a*-search 'function)
+      "
 Conduct an A* search. signals SOLUTION-FOUND when a solution is found,
  or PATH-NOT-FOUND otherwise. If the condition is not handled, it normally
  returns with the last node of the path, or nil when no solution was found.
@@ -168,72 +197,4 @@ The arguments:
 + tiebreak :: NIL, or (list node) -> (list node).
               If provided, sort the list of nodes of the same f*
               values. It may destructively modify the given list.
-"
-  (defun a*-search (start goal-p test edges
-                    h c g set-g set-parent
-                    &key verbose tiebreak)
-    (declare (dynamic-extent verbose test edges goal-p h c g set-g set-parent tiebreak))
-    (locally
-        (declare (optimize (speed 3) (debug 0) (safety 0) (space 0)))
-      (flet ((goal-p (a) (funcall goal-p a))
-             (edges (c) (funcall edges c))
-             (h (a) (funcall h a))
-             (c (edge) (funcall c edge))
-             (g (node) (funcall g node))
-             ((setf g) (newval node) (funcall set-g newval node))
-             ((setf parent) (newval node) (funcall set-parent newval node)))
-        (declare (dynamic-extent #'edges #'h #'c #'g #'goal-p #'(setf g) #'(setf parent)))
-        (declare (ftype (function ((real 0) rb-tree) list) rb-member))
-        (declare (inline goal-p edges h c g (setf g) (setf parent))) 
-        (let ((minimum-f 0))
-          (more-labels () (%search
-                           %rec %iter-edge
-                           %print-start
-                           %print-update-f*
-                           %print-solution-found
-                           %print-keep-searching)
-            (declare (inline %search))
-            (declare (dynamic-extent #'%search #'%rec #'%iter-edge))
-            (%search start))))))
- (declaim (notinline a*-search))
-
-  @export
-  @doc "
-It requires following methods for the node classes are provided:
-
-+ #'heuristic-cost-between
-+ #'generic-eq
-+ #'constraint-ordering-op
-+ #'edges
-+ #'cost
-+ #'(setf cost)
-+ #'(setf parent)
-
-If goal-p-or-goal is a node, it uses #'generic-eq on the node
-to determine the goal condition and
-it uses #'heuristic-cost-between the current search node and the goal-p-or-goal
-as the heuristic value of the node.
-
-If goal-p-or-goal is a function, it uses the function as a goal condition,
-and since no explicit information for a goal is provided, it requires
-heuristic-fn to compute f*. If heuristic-fn is not provided, it uses (constantly
-0), which means it actually runs a dijksrtra search."
-  (defun a*-search-clos (start goal-p-or-goal &key (verbose t) (heuristic-fn (constantly 0)))
-    (declare (inline a*-search))
-    (a*-search start
-               (if (functionp goal-p-or-goal)
-                   goal-p-or-goal
-                   (curry #'generic-eq goal-p-or-goal))
-               #'generic-eq
-               #'edges
-               (if (functionp goal-p-or-goal)
-                   heuristic-fn
-                   (rcurry #'heuristic-cost-between goal-p-or-goal))
-               #'cost
-               #'cost
-               #'(setf cost)
-               #'(setf parent)
-               :verbose verbose
-               :tiebreak (lambda (list)
-                           (sort list #'< :key #'constraint-ordering-op))))
-  (declaim (notinline a*-search-clos)))
+")

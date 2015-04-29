@@ -25,7 +25,7 @@
                            (function (node) (values)) ; expand
                            (function () node) ; fetch
                            &key
-                           :verbose)
+                           (:verbose t))
                           (values node))
                 forward-search))
 

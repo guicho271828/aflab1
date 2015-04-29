@@ -19,11 +19,8 @@ Author: guicho ()
   :author "guicho"
   :license "LLGPL"
   :depends-on (:iterate
-		:optima
-		:alexandria
-		:cl-annot
-		:guicho-utilities
-		:cl-syntax-annot)
+		:trivia
+		:alexandria)
   :components ((:module "src"
 			:serial t
 			:components

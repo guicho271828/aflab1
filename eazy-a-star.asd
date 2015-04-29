@@ -28,12 +28,17 @@ Author: guicho ()
 			:serial t
 			:components
 			((:file :package)
+                         (:file :rb-tree)
+			 (:file :priority-queue)
+			 (:file :a-star-search)))
+               #+nil
+               (:module "clos"
+			:serial t
+			:components
+			((:file :package)
 			 (:file :mixin)
                          (:file :specialized)
                          (:file :patterns)
-			 (:file :rb-tree)
-			 (:file :priority-queue)
-			 (:file :a-star-search)
                          (:file :clos-interface))))
   :description ""
   :long-description

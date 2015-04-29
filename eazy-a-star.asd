@@ -28,8 +28,6 @@ Author: guicho ()
 			:serial t
 			:components
 			((:file :package)
-                         (:file :rb-tree)
-			 (:file :priority-queue)
 			 (:file :a-star-search)))
                #+nil
                (:module "clos"

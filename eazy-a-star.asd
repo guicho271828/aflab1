@@ -28,7 +28,7 @@ Author: guicho ()
 			:serial t
 			:components
 			((:file :package)
-			 (:file :a-star-search)))
+			 (:file :forward-search)))
                #+nil
                (:module "clos"
 			:serial t

@@ -1,3 +1,3 @@
 ;;; enforced hill climbing
-(in-package :eazy-a*)
+(in-package :eazy-a-star)
 

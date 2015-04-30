@@ -20,6 +20,7 @@ Author: guicho ()
   :license "LLGPL"
   :depends-on (:iterate
 		:trivia
+                :immutable-struct
 		:alexandria)
   :components ((:module "src"
 			:serial t

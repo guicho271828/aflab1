@@ -1,7 +1,10 @@
-(in-package :eazy-a*)
+
+(in-package :eazy-a-star)
+
 (deftype predicate (&optional (arg t)) `(function (,arg) boolean))
+
 (deftype equality (&optional (arg t)) `(function (,arg ,arg) boolean))
 
-(defstruct node (parent nil :type (or null node)))
+
 
 

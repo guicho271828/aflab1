@@ -10,11 +10,9 @@
 	:iterate
 	:alexandria
 	:trivia)
+  (:shadowing-import-from :immutable-struct :ftype :defstruct)
   (:export :solution-not-found
            :solution-found
            :solution)
-  (:nicknames :eazy-a*))
-(in-package :eazy-a-star)
-
-;; blah blah blah.
+  (:nicknames :ea*))
 

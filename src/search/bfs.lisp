@@ -1,5 +1,5 @@
 ;;; best first search
-(in-package :eazy-a*)
+(in-package :eazy-a-star)
 
 
 ;;; eager bfs

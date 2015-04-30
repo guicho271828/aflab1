@@ -1,7 +1,13 @@
-(defpackage :eazy-a*.queue.array
-  (:use :cl :trivia)
-  (:shadowing-import-from :immutable-struct :ftype))
-(in-package :eazy-a*.queue.array)
+;;; list-bag
+(defpackage :eazy-a-star.queue.array.list
+  (:use :cl)
+  (:shadowing-import-from :immutable-struct :ftype)
+  (:nicknames :ea*.q.a.l)
+  (:export
+   #:init
+   #:enqueue
+   #:dequeue))
+(in-package :ea*.q.a.l)
 
 ;; Assumes the histogram of the priority is very dense and the priority is
 ;; always an integer.
@@ -32,3 +38,31 @@
       (values (pop (aref queue value)) t)
       (values nil nil)))
 
+
+;;; 
+;; b-tree based bag within each f-var
+
+(defpackage :eazy-a-star.queue.array.btree
+  (:use :cl :eazy-a-star.bag.btree)
+  (:shadowing-import-from :immutable-struct :ftype)
+  (:nicknames :ea*.q.a.b)
+  (:export
+   #:init
+   #:enqueue
+   #:dequeue))
+(in-package :ea*.q.a.b)
+
+(ftype init &optional (mod #.array-dimension-limit) (array btree))
+(defun init (&optional (initial-max (expt 2 18)))
+  (make-array initial-max :element-type 'btree))
+
+(ftype enqueue (array btree) t (mod #.array-dimension-limit) (values))
+(defun enqueue (queue thing value)
+  (push (aref queue value) thing)
+  (values))
+
+(ftype dequeue (array btree) (mod #.array-dimension-limit) (values t boolean))
+(defun dequeue (queue value)
+  (if (aref queue value)
+      (values (pop (aref queue value)) t)
+      (values nil nil)))

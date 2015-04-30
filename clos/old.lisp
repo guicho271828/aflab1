@@ -3,21 +3,17 @@
          ((rb-node _ _ _ nil _)
           (%rec (rb-remove-minimum-node open) closed))
          ((rb-node _ _ f* list _)
-          (%print-update-f* f* open closed)
           (destructuring-bind (now . rest)
               (if tiebreak (funcall tiebreak list) list)
             (if (goal-p now)
-                (progn
-                  (%print-solution-found open closed)
-                  (restart-case
-                      (progn
-                        (signal 'solution-found :solution now)
-                        (values now f*))
-                    (continue ()
-                      (%print-keep-searching)
-                      (%iter-edge (rb-insert open f* rest)
-                                  (insert-queue f* now closed)
-                                  now (edges now)))))
+                (restart-case
+                    (progn
+                      (signal 'solution-found :solution now)
+                      (values now f*))
+                  (continue ()
+                    (%iter-edge (rb-insert open f* rest)
+                                (insert-queue f* now closed)
+                                now (edges now))))
                 (%iter-edge (rb-insert open f* rest)
                             (insert-queue f* now closed)
                             now (edges now)))))

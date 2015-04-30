@@ -1,7 +1,7 @@
 
 
 ;;; generic forward search
-(in-package :eazy-a*)
+(in-package :ea*)
 
 ;;; conditions
 
@@ -33,14 +33,16 @@
 
 (declaim (inline forward-search))
 (defun forward-search (start goalp expand fetch)
-  (declare (optimize (speed 3) (debug 0) (safety 0) (space 0)))
-  (do ((node start (funcall fetch)))
-      ((when (goalp node)
-         (restart-case
-             (progn (signal 'solution-found node) t)
-           (continue () nil)))
-       node)
-    (funcall expand node)))
+  ;; do not put the declaration here, it will suppress eldoc strings!
+  (locally
+      (declare (optimize (speed 3) (debug 0) (safety 0) (space 0)))
+    (do ((node start (funcall fetch)))
+        ((when (funcall goalp node)
+           (restart-case
+               (progn (signal 'solution-found node) t)
+             (continue () nil)))
+         node)
+      (funcall expand node))))
 (declaim (notinline forward-search))
 
 ;;; documentation

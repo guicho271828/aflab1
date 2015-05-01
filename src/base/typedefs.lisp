@@ -10,6 +10,7 @@
            :successor
            ;;
            :id :node :edge
+           :goalp-interface
            ;;
            :implement-interface
            :define-interface))
@@ -46,3 +47,9 @@
   (cost 0 :type fixnum)
   (to (error "no edge destination") :type edge))
 
+;;; goal interface
+
+(define-interface goalp-interface (node)
+  ((goalp `(function (&rest *) (function (,node) boolean))))
+  :export t
+  :documentation "Interface for Goal Conditions")

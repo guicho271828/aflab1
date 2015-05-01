@@ -23,3 +23,15 @@
   ((solution :initarg :solution :accessor solution :type node)))
 
 (define-condition search-condition () ())
+
+
+
+
+(define-interface search-methods (queue)
+  ((expand `(function (,queue distance cost distance successor)
+                      (function (node) (values))))
+   (fetch  `(function (,queue distance cost distance successor)
+                      (function () node))))
+  :export t
+  :documentation "search engine interface")
+

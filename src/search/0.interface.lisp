@@ -7,7 +7,6 @@
            :search-methods)
   (:nicknames :ea*.s))
 
-;;; generic forward search
 (in-package :ea*.s)
 
 ;;; conditions

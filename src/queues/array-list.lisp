@@ -38,7 +38,7 @@
 ;;                   nil))
 ;;        (showenv))
 
-(defun enqueue (queue node value)
+(defun enqueue (queue value node)
   (ematch queue
     ((queue (min (place min)) array)
      (insert (aref array value) node)

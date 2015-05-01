@@ -27,7 +27,7 @@
 (defun init (&optional (initial-max (expt 2 18)))
   (make-queue :array (make-array initial-max :element-type 'hash-table :initial-element +unbound+)))
 
-(defun enqueue (queue node value)
+(defun enqueue (queue value node)
   (ematch queue
     ((queue (min (place min)) array)
      (let ((bag (aref array min)))

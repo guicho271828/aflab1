@@ -18,7 +18,8 @@
   (status +neither+ :type (integer -1 1)))
 
 (defpackage :eazy-a-star.search.a-star.eager
-  (:use :cl :ea*.b :ea*.s.a :ea*.q :trivia)
+  (:use :cl :structure-interface :trivia
+        :ea*.b :ea*.s.a :ea*.q)
   (:shadowing-import-from :immutable-struct :ftype)
   (:nicknames :ea*.s.a.e))
 (in-package :ea*.s.a.e)

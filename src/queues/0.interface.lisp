@@ -1,5 +1,5 @@
 (defpackage :eazy-a-star.queue
-  (:use :cl :ea*.b)
+  (:use :cl :ea*.b :structure-interface)
   (:nicknames :ea*.q)
   (:export
    #:queue-interface))

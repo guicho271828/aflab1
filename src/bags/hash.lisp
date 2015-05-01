@@ -1,7 +1,7 @@
 ;;; hash-bag
 
 (defpackage :eazy-a-star.bag.hash
-  (:use :cl :ea*.b)
+  (:use :cl :ea*.b :structure-interface)
   (:shadowing-import-from :immutable-struct :ftype)
   (:nicknames :ea*.bag.h)
   (:export))

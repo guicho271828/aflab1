@@ -1,5 +1,5 @@
 (defpackage :eazy-a-star.bag.list
-  (:use :cl :ea*.b)
+  (:use :cl :ea*.b :structure-interface)
   (:shadowing-import-from :immutable-struct :ftype)
   (:nicknames :ea*.bag.l)
   (:export))

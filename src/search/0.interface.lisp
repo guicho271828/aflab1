@@ -1,5 +1,5 @@
 (defpackage eazy-a-star.search
-  (:use :cl :ea*.b)
+  (:use :cl :ea*.b :structure-interface)
   (:export :solution-not-found
            :solution-found
            :solution

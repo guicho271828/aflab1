@@ -1,7 +1,7 @@
 
 (defpackage :eazy-a-star.queue.array.rb
   (:use :cl :trivialib.red-black-tree
-        :ea*.b)
+        :ea*.b :structure-interface)
   (:shadowing-import-from :immutable-struct :ftype)
   (:nicknames :ea*.q.a.rb)
   (:export #:init #:enqueue #:dequeue))

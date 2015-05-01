@@ -1,7 +1,8 @@
 ;;;; assume id
 
 (defpackage :eazy-a-star.queue.array.list
-  (:use :cl :ea*.b :ea*.bag :trivia)
+  (:use :cl :structure-interface :trivia
+        :ea*.b :ea*.bag)
   (:shadowing-import-from :immutable-struct :ftype)
   (:shadow :delete-id)
   (:nicknames :ea*.q.a.l))

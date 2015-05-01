@@ -9,11 +9,7 @@
            :cost
            :successor
            ;;
-           :id :node :edge
-           :goalp-interface
-           ;;
-           :implement-interface
-           :define-interface))
+           :id :node :edge))
 (in-package :ea*.b)
 
 (deftype predicate (&optional (arg t)) `(function (,arg) boolean))

@@ -1,6 +1,6 @@
 (defpackage eazy-a-star.search.forward-search
   (:use :cl :iterate :alexandria :trivia
-        :ea*.s :ea*.b)
+        :ea*.s :ea*.b :structure-interface)
   (:shadowing-import-from :immutable-struct :ftype :defstruct)
   (:export :forward-search)
   (:nicknames :ea*.s.fs))

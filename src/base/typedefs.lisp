@@ -49,24 +49,22 @@
 
 (lisp-namespace:define-namespace interface interface)
 
-(defmacro define-interface (name typevars &body methods)
-  (ematch methods
-    ((list* (and s (type string)) rest)
-     `(eval-when (:compile-toplevel :load-toplevel :execute)
-        (setf (symbol-interface ',name)
-              (interface ',typevars ',(mapcar #'first rest)))
-        ,@(mapcar (lambda-ematch
-                    ((list name body)
-                     (let ((expander (expander-fn-name name)))
-                       `(progn
-                          (defun ,expander ,typevars ,body)
-                          (deftype ,name ,typevars (,expander ,@typevars))))))
-                  rest)
-        (eval '(define-generic-functions ',name))
-        ,(dummy-form name typevars (concatenate 'string s "
-
-The macro is a dummy macro for slime integration."))))
-    (_ `(define-interface ,name ,typevars "" ,@methods))))
+(defmacro define-interface (name typevars (&body methods) &key (export t) (documentation ""))
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+     (setf (symbol-interface ',name)
+           (interface ',typevars ',(mapcar #'first methods)))
+     ,@(mapcar (lambda-ematch
+                 ((list name body)
+                  (let ((expander (expander-fn-name name)))
+                    `(progn
+                       ,@(when export `((export ',name)))
+                       (defun ,expander ,typevars ,body)
+                       (deftype ,name ,typevars (,expander ,@typevars))))))
+               methods)
+     (eval '(define-generic-functions ',name))
+     ,(dummy-form name typevars
+                  (format nil "~a~2%The macro is a dummy macro for slime integration."
+                          documentation))))
 
 (defun dummy-form (name typevars string)
   `(defmacro ,name (,@typevars)

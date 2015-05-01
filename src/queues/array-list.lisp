@@ -1,8 +1,9 @@
 ;;;; assume id
 
 (defpackage :eazy-a-star.queue.array.list
-  (:use :cl :ea*.b :ea*.q :ea*.bag :trivia)
+  (:use :cl :ea*.b :ea*.bag :trivia)
   (:shadowing-import-from :immutable-struct :ftype)
+  (:shadow :delete-id)
   (:nicknames :ea*.q.a.l))
 (in-package :ea*.q.a.l)
 
@@ -17,7 +18,7 @@
   (min 0 :type fixnum)
   (array (error "no array") :type (array list)))
 
-(implement-interface (queue-methods queue))
+(implement-interface (ea*.q:queue-methods queue))
 
 (ftype reflesh-minimum queue (values))
 (defun reflesh-minimum (queue)
@@ -30,10 +31,17 @@
 (defun init (&optional (initial-max (expt 2 18)))
   (make-queue :array (make-array initial-max :element-type 'bag)))
 
+;; (macrolet ((showenv (&environment e)
+;;                   (print
+;;                    (multiple-value-list
+;;                     (sb-cltl2:variable-information 'array e)))
+;;                   nil))
+;;        (showenv))
+
 (defun enqueue (queue node value)
   (ematch queue
     ((queue (min (place min)) array)
-     (insert node (aref array value))
+     (insert (aref array value) node)
      (alexandria:minf min value)
      (values))))
 
@@ -55,7 +63,7 @@
     ((queue array)
      (if (aref array value)
          (values (progn (setf (aref array value)
-                              (delete-id id (aref array value)))
+                              (ea*.bag:delete-id id (aref array value)))
                         (reflesh-minimum queue)
                         queue)
                  t)

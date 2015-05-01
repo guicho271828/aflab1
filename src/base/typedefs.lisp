@@ -2,16 +2,27 @@
   (:use :cl :trivia)
   (:shadowing-import-from :immutable-struct :defstruct :ftype)
   (:nicknames :ea*.b)
-  (:export :node :edge
-           :priority :id
-           ;; 
+  (:export :predicate
+           :equality
+           :priority
+           :distance
+           :cost
+           :successor
+           ;;
+           :id :node :edge
+           ;;
            :implement-interface
            :define-interface))
 (in-package :ea*.b)
 
 (deftype predicate (&optional (arg t)) `(function (,arg) boolean))
-
 (deftype equality (&optional (arg t)) `(function (,arg ,arg) boolean))
+(deftype priority () `(mod #.array-dimension-limit))
+(deftype distance () `(function (node node) fixnum))
+(deftype cost () `(function (edge) fixnum))
+(deftype successor () `(function (node) (vector node)))
+
+;;; id
 
 (defvar *id-count* 0)
 (deftype id () 'fixnum)
@@ -26,15 +37,14 @@
   (declare (optimize (debug 1) (speed 3) (space 0) (compilation-speed 0) (safety 0)))
   (id-mixin-id id-mixin))
 
+;;; node and edge
+
 (defstruct (node (:include id-mixin))
   (parent nil :type (or null node)))
 
 (defstruct (edge (:include id-mixin))
   (cost 0 :type fixnum)
   (to (error "no edge destination") :type edge))
-
-(deftype priority ()
-  `(mod #.array-dimension-limit))
 
 ;;; interface
 

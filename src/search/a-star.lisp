@@ -1,42 +1,68 @@
 ;;; a-star
-(defpackage :eazy-a-star.search.eager-a-star
-  (:use :cl :ea*.e)
-  (:shadowing-import-from :immutable-struct :ftype)
-  (:nicknames :ea*.s.ea)
+(defpackage :eazy-a-star.search.a-star
+  (:use :cl :ea*.b)
+  (:shadowing-import-from :immutable-struct :defstruct)
+  (:nicknames :ea*.s.a)
   (:export
-   #:expand
-   #:fetch))
-(in-package :ea*.s.ea)
+   #:astar-node
+   #:astar-node-g))
+(in-package :ea*.s.a)
+
+(defconstant +closed+ 1)
+(defconstant +open+ 0)
+(defconstant +neither+ -1)
+
+(defstruct (astar-node (:include node))
+  (g MOST-POSITIVE-FIXNUM :type fixnum)
+  (f MOST-POSITIVE-FIXNUM :type fixnum)
+  (status +neither+ :type (integer -1 1)))
+
+(defpackage :eazy-a-star.search.a-star.eager
+  (:use :cl :ea*.b :ea*.s.a :ea*.q :trivia)
+  (:shadowing-import-from :immutable-struct :ftype)
+  (:nicknames :ea*.s.a.e))
+(in-package :ea*.s.a.e)
 
 ;;; eager a*
 
-(defun expand (oc enq deq 
-               node g h
-               succ)
-  (map nil
-       (lambda (edge)
-         (let ((f (+ (edge-cost edge)
-                     (funcall h (edge-to edge))
-                     (funcall g node))))
-           
-         )
-       (funcall succ node)))
+(implement-interface (ea*.s:search-methods))
 
-  (let ((successors ))
-    (loop for (n . c) across successors
-          for f = 
-          do
-       
-    
+(ftype expand t t distance successor (function (astar-node) (values)))
+(defun expand (open closed h succ)
+  (lambda (node)
+    (delete-node open (aster-node-f node) node)
+    (enqueue closed (aster-node-f node) node)
+    (map nil
+         (lambda-ematch
+           ((edge :cost c
+                  :to (and to (astar-node :f (place f f1)
+                                          :g g
+                                          :status status
+                                          :parent (place p))))
+            (let ((f2 (+ g c (funcall h to))))
+              (match* (f2 status)
+                ((_ +neither+)
+                 (setf f f2
+                       p node
+                       status +open+)
+                 (enqueue open f2 to))
+                (((< f1) +open+)
+                 (setf f f2
+                       p node)
+                 (delete-node open f1 to)
+                 (enqueue open f2 to))
+                (((< f1) +closed+)
+                 (setf f f2
+                       p node
+                       status +open+)
+                 (delete-node closed f1 to)
+                 (enqueue open f2 to))))))
+         (funcall succ node))
+    (values)))
 
-
-  (funcall deq queue
-  )
-
-(defun fetch ()
-
-  )
-
+(defun fetch (open)
+  (lambda ()
+    (dequeue open)))
 
 
 ;;; lazy a*

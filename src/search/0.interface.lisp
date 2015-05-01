@@ -3,7 +3,8 @@
   (:export :solution-not-found
            :solution-found
            :solution
-           :search-condition)
+           :search-condition
+           :search-methods)
   (:nicknames :ea*.s))
 
 ;;; generic forward search
@@ -24,14 +25,12 @@
 
 (define-condition search-condition () ())
 
-
-
-
-(define-interface search-methods (queue)
-  ((expand `(function (,queue distance cost distance successor)
+(define-interface search-methods ()
+  ((expand `(function (t t distance successor)
                       (function (node) (values))))
-   (fetch  `(function (,queue distance cost distance successor)
-                      (function () node))))
+   (fetch  `(function (t) (function () node))))
   :export t
   :documentation "search engine interface")
+
+
 

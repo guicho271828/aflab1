@@ -18,9 +18,9 @@
 (deftype predicate (&optional (arg t)) `(function (,arg) boolean))
 (deftype equality (&optional (arg t)) `(function (,arg ,arg) boolean))
 (deftype priority () `(mod #.array-dimension-limit))
-(deftype distance () `(function (node node) fixnum))
+(deftype distance () `(function (node) fixnum))
 (deftype cost () `(function (edge) fixnum))
-(deftype successor () `(function (node) (vector node)))
+(deftype successor () `(function (node) (vector edge)))
 
 ;;; id
 

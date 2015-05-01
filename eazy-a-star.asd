@@ -36,8 +36,9 @@ Author: guicho ()
                                      (:file :array-list)
                                      (:file :array-hash)))
                (:module "search" :serial t
-                        :components ((:file :search)
-                                     (:file :forward-search))))
+                        :components ((:file :0.interface)
+                                     (:file :forward-search)
+                                     (:file :a-star))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

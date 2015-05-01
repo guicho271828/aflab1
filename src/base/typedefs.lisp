@@ -137,9 +137,7 @@
                     ;; for each method, redefine a new generic function
                     (let* ((expander (symbol-function (expander-fn-name m)))
                            (args (mapcar (lambda (x)
-                                           (ematch x
-                                             ((symbol) x)
-                                             (_ (gensym))))
+                                           (if (lambda-keywordp x) x (gensym)))
                                          (second (apply expander typevars))))
                            (args/lk (/lk args))
                            arg-type-list

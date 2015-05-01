@@ -21,6 +21,7 @@ Author: guicho ()
   :depends-on (:iterate
 		:trivia
                 :trivialib.red-black-tree
+                :structure-interface
                 :immutable-struct
 		:alexandria)
   :pathname "src"

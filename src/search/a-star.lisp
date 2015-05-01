@@ -27,7 +27,7 @@
 
 (implement-interface (ea*.s:search-methods))
 
-(ftype expand t t distance successor (function (astar-node) (values)))
+(ftype expand t t (distance astar-node) (successor astar-node) (function (astar-node) (values)))
 (defun expand (open closed h succ)
   (lambda (node)
     (delete-node open (aster-node-f node) node)

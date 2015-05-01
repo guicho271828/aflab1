@@ -9,3 +9,5 @@
 (in-package :ea*.oc.s)
 
 (defstruct oc open closed)
+
+;; not really sounds good...

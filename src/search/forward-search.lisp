@@ -1,22 +1,12 @@
-
+(defpackage eazy-a-star.search.forward-search
+  (:use :cl :iterate :alexandria :trivia
+        :ea*.s :ea*.b)
+  (:shadowing-import-from :immutable-struct :ftype :defstruct)
+  (:export :forward-search)
+  (:nicknames :ea*.s.fs))
 
 ;;; generic forward search
-(in-package :ea*)
-
-;;; conditions
-
-(define-condition solution-not-found (error)
-  ()
-  (:report
-   (lambda (c s)
-     (declare (ignore c))
-     (declare (type stream s))
-     (format s "Solution not found!"))))
-
-(define-condition solution-found ()
-  ((goal :initarg :goal :accessor goal)))
-
-(define-condition search-condition () ())
+(in-package :ea*.s.fs)
 
 ;;; type definition
 

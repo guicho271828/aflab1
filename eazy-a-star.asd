@@ -20,23 +20,20 @@ Author: guicho ()
   :license "LLGPL"
   :depends-on (:iterate
 		:trivia
+                :trivialib.red-black-tree
                 :immutable-struct
 		:alexandria)
-  :components ((:module "src"
-			:serial t
-			:components
-			((:file :package)
-			 (:file :typedefs)
-			 (:file :forward-search)))
-               #+nil
-               (:module "clos"
-			:serial t
-			:components
-			((:file :package)
-			 (:file :mixin)
-                         (:file :specialized)
-                         (:file :patterns)
-                         (:file :clos-interface))))
+  :pathname "src"
+  :serial t
+  :components ((:module "base"
+                        :components ((:file :typedefs)))
+               (:module "queues" :serial t
+                        ;; :depends-on (:trivialib.red-black-tree)
+                        :components ((:file :0.interface)
+                                     (:file :array)))
+               (:module "search" :serial t
+                        :components ((:file :search)
+                                     (:file :forward-search))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

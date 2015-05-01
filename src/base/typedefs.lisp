@@ -2,7 +2,7 @@
   (:use :cl :trivia)
   (:shadowing-import-from :immutable-struct :defstruct)
   (:nicknames :ea*.b)
-  (:export :node :node-id :edge :edge-id
+  (:export :node :edge
            :priority :id
            ;; 
            :implement-interface
@@ -15,17 +15,15 @@
 
 (let ((id 0))
   (declare (fixnum id))
-  (defstruct node
-    (id (incf id) :type fixnum)
-    (parent nil :type (or null node))))
+  (defstruct id-mixin
+    (id (incf id) :type fixnum :reader id)))
 
-(let ((id 0))
-  (declare (fixnum id))
-  (defstruct edge
-    (id (incf id) :type fixnum)
-    (cost 0 :type fixnum)
-    (to (error "no edge destination") :type edge)))
+(defstruct (node (include :id-mixin))
+  (parent nil :type (or null node)))
 
+(defstruct (edge (include :id-mixin))
+  (cost 0 :type fixnum)
+  (to (error "no edge destination") :type edge))
 
 (deftype priority ()
   `(mod #.array-dimension-limit))

@@ -5,22 +5,11 @@
    #:bag-methods))
 (in-package :ea*.bag)
 
-(deftype emptyp (bag)
-  `(function (,bag) boolean))
-
-(deftype insert (bag)
-  `(function (,bag node) ,bag))
-
-(deftype delete-id (bag)
-  `(function (,bag id) ,bag))
-
-(deftype get1 (bag)
-  `(function (,bag) node))
-
-(deftype map-bag (bag)
-  `(function (,bag (function (node) t)) (values)))
-
 (define-interface bag-methods (bag)
   "Interface for priority queues"
-  emptyp insert delete-id get1 map-bag)
+  (emptyp    `(function (,bag) boolean))
+  (insert    `(function (,bag node) ,bag))
+  (delete-id `(function (,bag id) ,bag))
+  (get1      `(function (,bag) node))
+  (map-bag   `(function (,bag (function (node) t)) (values))))
 

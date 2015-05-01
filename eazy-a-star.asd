@@ -33,7 +33,7 @@ Author: guicho ()
                                      (:file :hash)))
                (:module "queues" :serial t
                         :components ((:file :0.interface)
-                                     (:file :array)))
+                                     (:file :array-list)))
                (:module "search" :serial t
                         :components ((:file :search)
                                      (:file :forward-search))))

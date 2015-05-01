@@ -1,7 +1,7 @@
 ;;;; assume id
 
 (defpackage :eazy-a-star.queue.array.list
-  (:use :cl :ea*.b :ea*.q :ea*.bag.list :trivia)
+  (:use :cl :ea*.b :ea*.q :ea*.bag :trivia)
   (:shadowing-import-from :immutable-struct :ftype)
   (:nicknames :ea*.q.a.l))
 (in-package :ea*.q.a.l)
@@ -17,7 +17,7 @@
   (min 0 :type fixnum)
   (array (error "no array") :type (array list)))
 
-(implement-interface (queue-methods (queue)))
+(implement-interface (queue-methods queue))
 
 (ftype reflesh-minimum queue (values))
 (defun reflesh-minimum (queue)

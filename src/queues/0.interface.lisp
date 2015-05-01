@@ -5,17 +5,12 @@
    #:queue-methods))
 (in-package :ea*.q)
 
-(deftype init (queue)
-  `(function (&optional priority) ,queue))
-(deftype enqueue (queue)
-  `(function (,queue node priority) (values)))
-(deftype dequeue (queue)
-  `(function (,queue) (values (or node null) boolean)))
-(deftype delete-node (queue)
-  `(function (,queue priority node) (values ,queue boolean)))
-(deftype delete-id (queue)
-  `(function (,queue priority id) (values ,queue boolean)))
+
 
 (define-interface queue-methods (queue)
   "Interface for priority queues"
-  init enqueue dequeue delete-node delete-id)
+  (init        `(function (&optional priority) ,queue))
+  (enqueue     `(function (,queue node priority) (values)))
+  (dequeue     `(function (,queue) (values (or node null) boolean)))
+  (delete-node `(function (,queue priority node) (values ,queue boolean)))
+  (delete-id   `(function (,queue priority id) (values ,queue boolean))))

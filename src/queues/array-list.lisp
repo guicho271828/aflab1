@@ -56,7 +56,7 @@
            (values nil nil))))))
 
 (defun delete-node (queue value node)
-  (delete-id (id node)))
+  (delete-id queue value (id node)))
 
 (defun delete-id (queue value id)
   (ematch queue

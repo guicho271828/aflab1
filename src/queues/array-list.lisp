@@ -29,7 +29,7 @@
      (values))))
 
 (defun init (&optional (initial-max (expt 2 18)))
-  (make-queue :array (make-array initial-max :element-type 'bag)))
+  (make-queue :array (make-array initial-max :element-type 'list :initial-element nil)))
 
 ;; (macrolet ((showenv (&environment e)
 ;;                   (print

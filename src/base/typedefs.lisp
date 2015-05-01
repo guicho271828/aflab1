@@ -61,13 +61,18 @@ The macro is a dummy macro for slime integration.")
 (defmacro implement-interface ((name args &body implementations))
   (ematch (symbol-interface name)
     ((interface arguments ftypes)
-     (assert (= (length ftypes) (length implementations))
-             nil
-             "mismatch in interface/implementation")
-     (assert (= (length arguments) (length args))
-             nil
-             "mismatch in interface arguments")
-     `(declaim ,@(mapcar (lambda (ftype impl)
-                           `(cl:ftype (,ftype ,@args) ,impl))
-                         ftypes
-                         implementations)))))
+     (let ((implementations
+            (or implementations
+                (mapcar (lambda (x) (intern (string x)))
+                        ftypes))))
+
+       (assert (= (length ftypes) (length implementations))
+               nil
+               "mismatch in interface/implementation")
+       (assert (= (length arguments) (length args))
+               nil
+               "mismatch in interface arguments")
+       `(declaim ,@(mapcar (lambda (ftype impl)
+                             `(cl:ftype (,ftype ,@args) ,impl))
+                           ftypes
+                           implementations))))))

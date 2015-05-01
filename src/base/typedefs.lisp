@@ -122,9 +122,6 @@
 (defun /lk (list)
   (remove-if #'lambda-keywordp list))
 
-;; (mapcar (lambda (x) (declare (ignore x)) (gensym))
-;;                                          )
-
 (defun define-generic-functions (name)
   ;; recompile the generic version of the function.
   ;; dispatch is implemented with pattern matcher.

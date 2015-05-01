@@ -2,10 +2,10 @@
   (:use :cl :ea*.b)
   (:nicknames :ea*.bag)
   (:export
-   #:bag-methods))
+   #:bag-interface))
 (in-package :ea*.bag)
 
-(define-interface bag-methods (bag)
+(define-interface bag-interface (bag)
   ((emptyp    `(function (,bag) boolean))
    (insert    `(function (,bag node) ,bag))
    (delete-id `(function (,bag id) ,bag))

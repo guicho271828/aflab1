@@ -6,7 +6,7 @@
 (in-package :ea*.bag.l)
 
 (implement-interface
-    (ea*.bag:bag-methods list))
+    (ea*.bag:bag-interface list))
 
 (defun emptyp (list)
   (null list))

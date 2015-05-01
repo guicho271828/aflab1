@@ -18,7 +18,7 @@
   (min 0 :type fixnum)
   (array (error "no array") :type (array list)))
 
-(implement-interface (ea*.q:queue-methods queue))
+(implement-interface (ea*.q:queue-interface queue))
 
 (ftype reflesh-minimum queue (values))
 (defun reflesh-minimum (queue)

@@ -2,10 +2,10 @@
   (:use :cl :ea*.b)
   (:nicknames :ea*.q)
   (:export
-   #:queue-methods))
+   #:queue-interface))
 (in-package :ea*.q)
 
-(define-interface queue-methods (queue)
+(define-interface queue-interface (queue)
   ((enqueue     `(function (,queue priority node) (values)))
    (dequeue     `(function (,queue) (values (or node null) boolean)))
    (delete-node `(function (,queue priority node) (values ,queue boolean)))

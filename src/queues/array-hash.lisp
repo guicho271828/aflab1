@@ -12,7 +12,7 @@
   (min 0 :type fixnum)
   (array (error "no array") :type (array (or hash-table (eql +unbound+)))))
 
-(implement-interface (ea*.q:queue-methods queue))
+(implement-interface (ea*.q:queue-interface queue))
 
 (ftype reflesh-minimum queue (values))
 (defun reflesh-minimum (queue)

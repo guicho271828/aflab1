@@ -39,6 +39,7 @@
 (defmacro define-interface (name args &body ftypes)
   (ematch ftypes
     ((list* (and s (type string)) rest)
+     (assert (every #'symbolp rest))
      `(eval-when (:compile-toplevel :load-toplevel :execute)
         (setf (symbol-interface ',name) (interface ',args ',rest))
         (defmacro ,name (,args ,@rest)
@@ -46,11 +47,16 @@
                         s "
 
 The macro is a dummy macro for slime integration.")
+          (declare (ignore ,@args ,@rest))
           (error "dummy macro!"))))
     (_
+     (assert (every #'symbolp ftypes))
      `(eval-when (:compile-toplevel :load-toplevel :execute)
         (setf (symbol-interface ',name) (interface ',args ',ftypes))
-        (defmacro ,name (,args ,@ftypes) "This is a dummy macro for slime integration." (error "dummy macro!"))))))
+        (defmacro ,name (,args ,@ftypes)
+          "This is a dummy macro for slime integration."
+          (declare (ignore ,@args ,@ftypes))
+          (error "dummy macro!"))))))
 
 (defmacro implement-interface ((name args &body implementations))
   (ematch (symbol-interface name)

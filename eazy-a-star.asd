@@ -27,8 +27,11 @@ Author: guicho ()
   :serial t
   :components ((:module "base"
                         :components ((:file :typedefs)))
+               (:module "bags" :serial t
+                        :components ((:file :0.interface)
+                                     (:file :list)
+                                     (:file :hash)))
                (:module "queues" :serial t
-                        ;; :depends-on (:trivialib.red-black-tree)
                         :components ((:file :0.interface)
                                      (:file :array)))
                (:module "search" :serial t

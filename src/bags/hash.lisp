@@ -14,7 +14,7 @@
   (zerop (hash-table-count hash)))
 
 (defun insert (hash node)
-  (setf (gethash (node-id node) hash) node)
+  (setf (gethash (id node) hash) node)
   hash)
 
 (defun delete-id (hash id)
@@ -38,7 +38,7 @@
 ;; (defun enqueue (queue node value)
 ;;   (unless (aref queue value)
 ;;     (setf (aref queue value) (make-hash-table)))
-;;   (setf (gethash (node-id node) (aref queue value)) node)
+;;   (setf (gethash (id node) (aref queue value)) node)
 ;;   (values))
 ;; 
 ;; (ftype dequeue (array hashtable) priority (values t boolean))

@@ -16,7 +16,7 @@
   list)
 
 (defun delete-id (list id)
-  (delete id list :count 1 :key #'node-id))
+  (delete id list :count 1 :key #'id))
 
 (defun get1 (list)
   (car list))

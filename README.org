@@ -10,8 +10,8 @@ Defined interfaces and their implementations:
    + eazy-a-star.bag.list
    + eazy-a-star.bag.hash
 2) eazy-a-star.queue:queue-interface
-   + eazy-a-star.bag.array.list
-   + eazy-a-star.bag.array.hash
+   + eazy-a-star.queue.array.list
+   + eazy-a-star.queue.array.hash
 3) eazy-a-star.search:search-interface
    + eazy-a-star.search.a-star.eager
 4) eazy-a-star.base:goalp-interface

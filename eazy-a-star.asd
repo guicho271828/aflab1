@@ -18,8 +18,7 @@ Author: guicho ()
   :version "0.1"
   :author "guicho"
   :license "LLGPL"
-  :depends-on (:iterate
-		:trivia
+  :depends-on (:trivia
                 :trivialib.red-black-tree
                 :structure-interface
                 :immutable-struct

@@ -4,7 +4,7 @@
            :solution-found
            :solution
            :search-condition
-           :search-engine-interface)
+           :search-interface)
   (:nicknames :ea*.s))
 
 (in-package :ea*.s)
@@ -24,7 +24,7 @@
 
 (define-condition search-condition () ())
 
-(define-interface search-engine-interface ()
+(define-interface search-interface ()
   ((expand `(function (t t distance successor)
                       (function (node) (values))))
    (fetch  `(function (t) (function () node))))

@@ -26,7 +26,7 @@
 
 ;;; eager a*
 
-(implement-interface (ea*.s:search-engine-interface))
+(implement-interface (ea*.s:search-interface))
 
 (ftype expand t t (distance astar-node) (successor astar-node) (function (astar-node) (values)))
 (defun expand (open closed h succ)

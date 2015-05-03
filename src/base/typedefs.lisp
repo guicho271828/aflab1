@@ -14,7 +14,7 @@
 
 (deftype predicate (&optional (arg t)) `(function (,arg) boolean))
 (deftype equality (&optional (arg t)) `(function (,arg ,arg) boolean))
-(deftype priority () `(mod #.array-dimension-limit))
+(deftype priority () 'FIXNUM)
 
 ;;; id
 
@@ -42,6 +42,6 @@
 
 (immutable-struct:defstruct (edge (:include id-mixin))
   (cost 0 :type fixnum)
-  (to (error "no edge destination") :type edge))
+  (to (error "no edge destination") :type node))
 
 

@@ -39,10 +39,10 @@
 
 (defun distance (from to)
   (ematch to
-    ((2d-node :x x1 :y y2)
+    ((2d-node :x x1 :y y1)
      (ematch from
        ((2d-node :x x2 :y y2)
-        (sqrt (+ (^2 (- x2 x1)) (^2 (- y2 y1)))))))))
+        (floor (sqrt (+ (^2 (- x2 x1)) (^2 (- y2 y1))))))))))
 
 (defun draw2 (from to)
   (ematch from
@@ -102,7 +102,7 @@
     (ea*.s:forward-search
      start
      (goalp goal)
-     (ea*.s:expand open closed #'distance #'my-succ)
+     (ea*.s:expand open closed (curry #'distance goal) #'my-succ)
      (ea*.s:fetch open))))
 
 (defun call-with-drawing (fn)

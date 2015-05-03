@@ -67,28 +67,32 @@
      (draw2 node parent)
      (draw-path parent))))
 
-(defun k-nearest (target k distance samples)
-  (subseq (sort (mapcar (lambda (s) (cons (funcall distance target s) s))
-                        (remove target samples))
-                #'<
-                :key #'car)
-          0 k))
+(defun neighbors (target distance samples)
+  (sort (mapcar (lambda (s) (cons (funcall distance target s) s))
+                (remove target samples))
+        #'<
+        :key #'car))
+
+(defun pareto-nearest (target k distance samples)
+  (iter (generate i below k)
+        (for pair in (subseq (neighbors target distance samples) 0 k))
+        (for (dist . sample) = pair)
+        (when (member target (subseq (neighbors sample distance samples) 0 k) :key #'cdr)
+          (next i)
+          (collect pair))))
 
 (defun my-succ (node)
   (map 'vector
-       (lambda-match
+       (lambda-ematch
          ((cons dist sample)
           (make-edge :cost dist :to sample)))
-       (k-nearest node *edge-number* #'distance *samples*)))
+       (pareto-nearest node *edge-number* #'distance *samples*)))
 
 ;; (implement-interface (ea*.s:goalp-interface 2d-node))
 
 (defun goalp (goal)
   (lambda (node)
     (eq goal node)))
-
-(sb-profile:profile astar-search ea*.s:forward-search ea*.s:expand
-                    ea*.s:fetch ea*.q::delete-node ea*.q::enqueue)
 
 (ftype astar-search 2d-node 2d-node 2d-node)
 (defun astar-search (start goal)
@@ -97,8 +101,8 @@
                       ea*.s:fetch
                       ea*.q::delete-node
                       ea*.q::enqueue))
-  (let ((open (ea*.q.a.l:init))
-        (closed (ea*.q.a.l:init)))
+  (let ((open (ea*.q.a.l:init (expt 2 13)))
+        (closed (ea*.q.a.l:init (expt 2 13))))
     (ea*.s:forward-search
      start
      (goalp goal)
@@ -110,7 +114,6 @@
     (set-rgba-stroke 0 0 0 0.3)
     (set-rgba-fill 0 0 0 0.3)
     (set-line-width 1)
-    (mapc #'draw *samples*)
     (unwind-protect (funcall fn)
       (ensure-directories-exist
        (asdf:system-relative-pathname
@@ -118,25 +121,39 @@
         "result/"))
       (save-png (asdf:system-relative-pathname
                  :eazy-a-star
-                 (format nil "result/~a.png" (now)))))))
+                 (format nil "result/~a.png" "aaa"))))))
+
+(defun test-a-star ()
+  (let* ((*sample-num* 100)
+         (*edge-number* 8)
+         (*samples* (make-samples)))
+    (format t "Number of samples: ~50A~&" *sample-num*)
+    (call-with-drawing
+     (lambda ()
+       (mapc #'draw *samples*)
+       (iter (for s in *samples*)
+             (iter (for s2 in (pareto-nearest s *edge-number* #'distance *samples*))
+                   (match s2
+                     ((cons _ s2)
+                      (draw2 s s2)))))
+       (let ((start (random-elt *samples*))
+             (goal (random-elt *samples*)))
+         (setf (ea*.s.a:a-star-node-h start)
+               (distance start goal))
+         (setf (ea*.s.a:a-star-node-f start)
+               (ea*.s.a:a-star-node-h start))
+         (set-rgba-fill 1 0 0 0.7)
+         (set-rgba-stroke 1 0 0 0.7)
+         (draw start)
+         (draw goal)
+         (set-line-width 2)
+         (set-rgba-fill 1 0 0 0.5)
+         (set-rgba-stroke 1 0 0 0.5)
+         (let ((*print-level* 3))
+           (draw-path (astar-search start goal))))))))
 
 (test astar
-  (let ((*sample-num* 50)
-        (*samples* (make-samples)))
-    (format t "Number of samples: ~50A~&" *sample-num*)
-    (finishes
-     (call-with-drawing
-      (lambda ()
-        (let ((start (random-elt *samples*))
-              (goal (random-elt *samples*)))
-          (set-rgba-fill 1 0 0 0.7)
-          (set-rgba-stroke 1 0 0 0.7)
-          (draw start)
-          (draw goal)
-          (set-line-width 2)
-          (set-rgba-fill 1 0 0 0.5)
-          (set-rgba-stroke 1 0 0 0.5)
-          (draw-path (astar-search start goal))))))))
+  (finishes (test-a-star)))
 
 
 

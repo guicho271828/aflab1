@@ -1,23 +1,20 @@
 (defpackage :eazy-a-star.base
   (:use :cl :trivia :structure-interface)
-  (:shadowing-import-from :immutable-struct :defstruct :ftype)
+  (:shadowing-import-from :immutable-struct :ftype)
   (:nicknames :ea*.b)
   (:export :predicate
            :equality
            :priority
-           :distance
-           :cost
-           :successor
            ;;
-           :id :node :edge))
+           :id :node :make-node
+           :edge
+           :make-edge
+           :*default-parent-node*))
 (in-package :ea*.b)
 
 (deftype predicate (&optional (arg t)) `(function (,arg) boolean))
 (deftype equality (&optional (arg t)) `(function (,arg ,arg) boolean))
 (deftype priority () `(mod #.array-dimension-limit))
-(deftype distance (&optional (node 'node)) `(function (,node) fixnum))
-(deftype cost () `(function (edge) fixnum))
-(deftype successor (&optional (node 'node)) `(function (,node) (vector edge)))
 
 ;;; id
 
@@ -25,7 +22,7 @@
 (deftype id () 'fixnum)
 (declaim (id *id-count*))
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defstruct id-mixin
+  (immutable-struct:defstruct id-mixin
     (id (incf *id-count*) :type id)))
 
 (declaim (inline id id-mixin-id))
@@ -36,16 +33,15 @@
 
 ;;; node and edge
 
-(defstruct (node (:include id-mixin))
-  (parent nil :type (or null node)))
+;; (eval-when (:compile-toplevel :load-toplevel :execute)
+;;   )
+(defvar *default-parent-node*)
+  (defstruct (node (:include id-mixin))
+    (parent *default-parent-node* :type node))
+(setf *default-parent-node* (allocate-instance (find-class 'node)))
 
-(defstruct (edge (:include id-mixin))
+(immutable-struct:defstruct (edge (:include id-mixin))
   (cost 0 :type fixnum)
   (to (error "no edge destination") :type edge))
 
-;;; goal interface
 
-(define-interface goalp-interface (node)
-  ((goalp `(function (&rest *) (function (,node) boolean))))
-  :export t
-  :documentation "Interface for Goal Conditions")

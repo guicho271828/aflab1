@@ -37,7 +37,6 @@ Author: guicho ()
                                      (:file :array-hash)))
                (:module "search" :serial t
                         :components ((:file :0.interface)
-                                     (:file :forward-search)
                                      (:file :a-star)))
                (:file :package))
   :description ""

@@ -17,19 +17,7 @@
   :components ((:module "t"
                 :serial t
                 :components
-                ((:file :package)
-                 (:file :model)
-		 (:file :drawer)
-		 (:file :core)
-		 (:file :a-star)
-                 (:file :regression-stack-exhanst)
-                 (:module :8puzzle
-                          :serial :t
-                          :components
-                          ((:file :model)
-                           (:file :methods)
-                           (:file :ops)
-                           (:file :test))))))
+                ((:file :package))))
   :perform (load-op :after (op c) 
 		    (eval (read-from-string "(fiveam:run! :eazy-a-star)"))
 		    (asdf:clear-system c)))

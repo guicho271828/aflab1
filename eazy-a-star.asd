@@ -25,8 +25,7 @@ Author: guicho ()
 		:alexandria)
   :pathname "src"
   :serial t
-  :components ((:module "base"
-                        :components ((:file :typedefs)))
+  :components ((:file :typedefs)
                (:module "bags" :serial t
                         :components ((:file :0.interface)
                                      (:file :list)

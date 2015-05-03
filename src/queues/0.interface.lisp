@@ -4,7 +4,8 @@
 (in-package :ea*.q)
 
 (define-interface queue-interface (queue)
-  ((enqueue     `(function (,queue priority node) (values)))
+  ((init        `(function (&rest t) ,queue) :external t)
+   (enqueue     `(function (,queue priority node) (values)))
    (dequeue     `(function (,queue) (values (or node null) boolean)))
    (delete-node `(function (,queue priority node) (values ,queue boolean)))
    (delete-id   `(function (,queue priority id) (values ,queue boolean))))

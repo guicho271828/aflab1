@@ -3,8 +3,7 @@
   (:export :solution-not-found
            :solution-found
            :solution
-           :search-condition
-           :search-interface)
+           :search-condition)
   (:nicknames :ea*.s))
 
 (in-package :ea*.s)

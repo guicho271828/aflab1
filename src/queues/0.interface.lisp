@@ -1,8 +1,6 @@
 (defpackage :eazy-a-star.queue
   (:use :cl :ea*.b :structure-interface)
-  (:nicknames :ea*.q)
-  (:export
-   #:queue-interface))
+  (:nicknames :ea*.q))
 (in-package :ea*.q)
 
 (define-interface queue-interface (queue)

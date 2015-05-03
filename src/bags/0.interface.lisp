@@ -1,8 +1,6 @@
 (defpackage :eazy-a-star.bag
   (:use :cl :ea*.b :structure-interface)
-  (:nicknames :ea*.bag)
-  (:export
-   #:bag-interface))
+  (:nicknames :ea*.bag))
 (in-package :ea*.bag)
 
 (define-interface bag-interface (bag content)

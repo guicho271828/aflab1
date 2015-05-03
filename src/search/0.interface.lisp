@@ -57,6 +57,8 @@
              (progn (signal 'solution-found node) t)
            (continue () nil)))
        node)
+    (unless node
+      (error 'solution-not-found))
     (funcall expand node)))
 (declaim (notinline forward-search))
 

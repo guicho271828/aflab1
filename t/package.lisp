@@ -124,8 +124,8 @@
                  (format nil "result/~a.png" "aaa"))))))
 
 (defun test-a-star ()
-  (let* ((*sample-num* 100)
-         (*edge-number* 8)
+  (let* ((*sample-num* 200)
+         (*edge-number* 6)
          (*samples* (make-samples)))
     (format t "Number of samples: ~50A~&" *sample-num*)
     (call-with-drawing
@@ -149,7 +149,7 @@
          (set-line-width 2)
          (set-rgba-fill 1 0 0 0.5)
          (set-rgba-stroke 1 0 0 0.5)
-         (let ((*print-level* 3))
+         (let ((*print-level* 2))
            (draw-path (astar-search start goal))))))))
 
 (test astar

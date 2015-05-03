@@ -1,25 +1,29 @@
 ;;; a-star
 (defpackage :eazy-a-star.search.a-star
   (:use :cl :ea*.b :structure-interface)
-  (:shadowing-import-from :immutable-struct :defstruct)
   (:nicknames :ea*.s.a)
   (:export
-   #:astar-node
-   #:astar-node-g))
+   #:a-star-node
+   #:a-star-node-g
+   #:a-star-node-f
+   #:a-star-node-status
+   #:+closed+
+   #:+open+
+   #:+neither+))
 (in-package :ea*.s.a)
 
 (defconstant +closed+ 1)
 (defconstant +open+ 0)
 (defconstant +neither+ -1)
 
-(defstruct (astar-node (:include node))
+(defstruct (a-star-node (:include node))
   (g MOST-POSITIVE-FIXNUM :type fixnum)
   (f MOST-POSITIVE-FIXNUM :type fixnum)
   (status +neither+ :type (integer -1 1)))
 
 (implement-interface
-    (ea*.bag:bag-interface hash-table astar-node)
-    :inherit (hash-table node))
+ (ea*.bag:bag-interface hash-table a-star-node)
+ :inherit (hash-table node))
 
 (defpackage :eazy-a-star.search.a-star.eager
   (:use :cl :structure-interface :trivia
@@ -30,20 +34,20 @@
 
 ;;; eager a*
 
-(implement-interface (ea*.s:search-interface))
+(implement-interface (ea*.s:search-interface a-star-node))
 
-(ftype expand t t (distance astar-node) (successor astar-node) (function (astar-node) (values)))
 (defun expand (open closed h succ)
   (lambda (node)
-    (delete-node open (aster-node-f node) node)
-    (enqueue closed (aster-node-f node) node)
+    (declare (notinline delete-node enqueue))
+    (delete-node open (a-star-node-f node) node)
+    (enqueue closed (a-star-node-f node) node)
     (map nil
          (lambda-ematch
            ((edge :cost c
-                  :to (and to (astar-node :f (place f f1)
-                                          :g g
-                                          :status status
-                                          :parent (place p))))
+                  :to (and to (a-star-node :f (place f f1)
+                                           :g g
+                                           :status (place status)
+                                           :parent (place p))))
             (let ((f2 (+ g c (funcall h to))))
               (match* (f2 status)
                 ((_ +neither+)

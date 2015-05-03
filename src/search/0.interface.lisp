@@ -24,10 +24,12 @@
 
 (define-condition search-condition () ())
 
-(define-interface search-interface ()
-  ((expand `(function (t t distance successor)
-                      (function (node) (values))))
-   (fetch  `(function (t) (function () node))))
+(define-interface search-interface (node)
+  ((expand `(function (t t
+                         (function (,node) number)
+                         (function (,node) (vector edge)))
+                      (function (,node) (values))))
+   (fetch  `(function (t) (function () ,node))))
   :export t
   :documentation "search engine interface")
 

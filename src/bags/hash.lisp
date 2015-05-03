@@ -9,7 +9,7 @@
 (in-package :ea*.bag.h)
 
 (defstruct hash-bag
-  (hash (make-hash-table) :type hash))
+  (hash (make-hash-table) :type hash-table))
 
 (implement-interface
     (ea*.bag:bag-interface hash-bag node))

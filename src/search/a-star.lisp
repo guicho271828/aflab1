@@ -23,12 +23,12 @@
   (h -1 :type fixnum)
   (status +neither+ :type (integer -1 1)))
 
-(implement-interface
- (ea*.bag:bag-interface ea*.bag.h:hash-bag a-star-node)
- :inherit (ea*.bag.h:hash-bag node))
-(implement-interface
- (ea*.bag:bag-interface ea*.bag.l:list-bag a-star-node)
- :inherit (ea*.bag.l:list-bag node))
+;; (implement-interface
+;;  (ea*.bag:bag-interface ea*.bag.h:hash-bag a-star-node)
+;;  :inherit (ea*.bag.h:hash-bag node))
+;; (implement-interface
+;;  (ea*.bag:bag-interface ea*.bag.l:list-bag a-star-node)
+;;  :inherit (ea*.bag.l:list-bag node))
 
 (defpackage :eazy-a-star.search.a-star.eager
   (:use :cl :structure-interface :trivia
@@ -86,10 +86,7 @@
 
 (defun fetch (open)
   (lambda ()
-    (match (dequeue open)
-      ((and it (a-star-node f))
-       (format t "~&current minimum: ~a" f)
-       it))))
+    (dequeue open)))
 
 
 ;;; lazy a*

@@ -123,7 +123,7 @@
                  :eazy-a-star
                  (format nil "result/~a.png" "aaa"))))))
 
-(defun test-a-star ()
+(defun test-a-star (astar-searcher)
   (let* ((*sample-num* 200)
          (*edge-number* 6)
          (*samples* (make-samples)))
@@ -150,10 +150,28 @@
          (set-rgba-fill 1 0 0 0.5)
          (set-rgba-stroke 1 0 0 0.5)
          (let ((*print-level* 2))
-           (draw-path (astar-search start goal))))))))
+           (draw-path (funcall astar-searcher start goal))))))))
 
 (test astar
-  (finishes (test-a-star)))
+  (finishes (test-a-star #'astar-search)))
 
 
+(ftype astar-search2 2d-node 2d-node 2d-node)
+(defun astar-search2 (start goal)
+  (declare (notinline ea*.s:forward-search
+                      ea*.s:expand
+                      ea*.s:fetch
+                      ea*.q::delete-node
+                      ea*.q::enqueue))
+  ;; using hash-based bag
+  (let ((open (ea*.q.a.h:init (expt 2 13)))
+        (closed (ea*.q.a.h:init (expt 2 13))))
+    (ea*.s:forward-search
+     start
+     (goalp goal)
+     (ea*.s:expand open closed (curry #'distance goal) #'my-succ)
+     (ea*.s:fetch open))))
+
+(test astar2
+  (finishes (test-a-star #'astar-search2)))
 

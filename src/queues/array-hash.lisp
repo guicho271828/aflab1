@@ -2,7 +2,7 @@
   (:use :cl :structure-interface :trivia
         :ea*.b :ea*.bag)
   (:shadowing-import-from :immutable-struct :ftype)
-  (:shadow :delete-id)
+  (:shadow :delete-id :init)
   (:nicknames :ea*.q.a.h))
 (in-package :ea*.q.a.h)
 

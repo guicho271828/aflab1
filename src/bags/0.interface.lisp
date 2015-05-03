@@ -5,12 +5,12 @@
    #:bag-interface))
 (in-package :ea*.bag)
 
-(define-interface bag-interface (bag)
+(define-interface bag-interface (bag content)
   ((emptyp    `(function (,bag) boolean))
-   (insert    `(function (,bag node) ,bag))
+   (insert    `(function (,bag ,content) ,bag))
    (delete-id `(function (,bag id) ,bag))
-   (get1      `(function (,bag) node))
-   (map-bag   `(function (,bag (function (node) t)) (values))))
+   (get1      `(function (,bag) ,content))
+   (map-bag   `(function (,bag (function (,content) t)) (values))))
   :export t
   :documentation "Interface for priority queues")
 

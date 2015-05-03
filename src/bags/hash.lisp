@@ -8,7 +8,7 @@
 (in-package :ea*.bag.h)
 
 (implement-interface
-    (ea*.bag:bag-interface hash-table))
+    (ea*.bag:bag-interface hash-table node))
 
 (defun emptyp (hash)
   (zerop (hash-table-count hash)))

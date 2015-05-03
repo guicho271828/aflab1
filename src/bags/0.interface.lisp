@@ -4,7 +4,8 @@
 (in-package :ea*.bag)
 
 (define-interface bag-interface (bag content)
-  ((emptyp    `(function (,bag) boolean))
+  ((init      `(function ()     ,bag) :external t)
+   (emptyp    `(function (,bag) boolean))
    (insert    `(function (,bag ,content) ,bag))
    (delete-id `(function (,bag id) ,bag))
    (get1      `(function (,bag) ,content))

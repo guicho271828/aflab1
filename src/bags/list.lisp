@@ -1,26 +1,42 @@
 (defpackage :eazy-a-star.bag.list
-  (:use :cl :ea*.b :structure-interface)
+  (:use :cl :ea*.b :structure-interface :trivia)
   (:shadowing-import-from :immutable-struct :ftype)
   (:nicknames :ea*.bag.l)
-  (:export))
+  (:export
+   #:list-bag))
 (in-package :ea*.bag.l)
 
+(defstruct list-bag
+  (list nil :type list))
+
 (implement-interface
-    (ea*.bag:bag-interface list node))
+    (ea*.bag:bag-interface list-bag node))
 
-(defun emptyp (list)
-  (null list))
+(defun init ()
+  (make-list-bag))
 
-(defun insert (list node)
-  (push node list)
-  list)
+(defun-ematch emptyp (lb)
+  ((list-bag list)
+   (null list)))
 
-(defun delete-id (list id)
-  (delete id list :count 1 :key #'id))
+(defun insert (lb node)
+  (ematch lb
+    ((list-bag (list (place list)))
+     (push node list)
+     lb)))
 
-(defun get1 (list)
-  (car list))
+(defun delete-id (lb id)
+  (ematch lb
+    ((list-bag (list (place list)))
+     (setf list (delete id list :count 1 :key #'id))
+     lb)))
 
-(defun map-bag (list fn)
-  (mapcar fn list)
-  (values))
+(defun-ematch get1 (lb)
+  ((list-bag list)
+   (pop list)))
+
+(defun map-bag (lb fn)
+  (ematch lb
+    ((list-bag list)
+     (mapcar fn list)
+     (values))))

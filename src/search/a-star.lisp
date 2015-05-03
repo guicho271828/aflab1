@@ -1,6 +1,6 @@
 ;;; a-star
 (defpackage :eazy-a-star.search.a-star
-  (:use :cl :ea*.b)
+  (:use :cl :ea*.b :structure-interface)
   (:shadowing-import-from :immutable-struct :defstruct)
   (:nicknames :ea*.s.a)
   (:export
@@ -16,6 +16,10 @@
   (g MOST-POSITIVE-FIXNUM :type fixnum)
   (f MOST-POSITIVE-FIXNUM :type fixnum)
   (status +neither+ :type (integer -1 1)))
+
+(implement-interface
+    (ea*.bag:bag-interface hash-table astar-node)
+    :inherit (hash-table node))
 
 (defpackage :eazy-a-star.search.a-star.eager
   (:use :cl :structure-interface :trivia

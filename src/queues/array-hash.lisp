@@ -25,7 +25,7 @@
        (incf min))
      (values))))
 
-(defun init (&optional (initial-max (expt 2 18)))
+(defun init (&optional (initial-max (expt 2 6)))
   (make-queue :array (make-array initial-max :element-type 'hash-table :initial-element +unbound+)))
 
 (defun enqueue (queue value node)

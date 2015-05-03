@@ -48,9 +48,8 @@
     (ematch node
       ((a-star-node :g g1 :f f1 :status (place status))
        (setf status +closed+)
-       (with-open-file (*standard-output* "/dev/null" :direction :output :if-exists :overwrite)
-         (delete-node open f1 node)
-         (enqueue closed f1 node))
+       (delete-node open f1 node)
+       (enqueue closed f1 node)
        (map nil
             (lambda-ematch
               ((edge :cost c :to to)

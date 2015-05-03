@@ -42,9 +42,10 @@
 (defun enqueue (queue value node)
   (ematch queue
     ((queue (min (place min)) array)
-     (insert (aref array value) node)
-     (alexandria:minf min value)
-     (values))))
+     (let ((value (min value (1- (length array)))))
+       (insert (aref array value) node)
+       (alexandria:minf min value)
+       (values)))))
 
 (defun dequeue (queue)
   (ematch queue
@@ -62,10 +63,11 @@
 (defun delete-id (queue value id)
   (ematch queue
     ((queue array)
-     (if (aref array value)
-         (values (progn (setf (aref array value)
-                              (ea*.bag:delete-id id (aref array value)))
-                        (reflesh-minimum queue)
-                        queue)
-                 t)
-         (values queue nil)))))
+     (let ((value (min value (1- (length array)))))
+       (if (aref array value)
+           (values (progn (setf (aref array value)
+                                (ea*.bag:delete-id id (aref array value)))
+                          (reflesh-minimum queue)
+                          queue)
+                   t)
+           (values queue nil))))))

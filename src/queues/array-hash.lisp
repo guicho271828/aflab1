@@ -31,12 +31,13 @@
 (defun enqueue (queue value node)
   (ematch queue
     ((queue (min (place min)) array)
-     (let ((bag (aref array min)))
-       (when (eq +unbound+ bag)
-         (setf (aref array value) (make-hash-table)))
-       (insert bag node)
-       (alexandria:minf min value)
-       (values)))))
+     (let ((value (min value (1- (length array)))))
+       (let ((bag (aref array min)))
+         (when (eq +unbound+ bag)
+           (setf (aref array value) (make-hash-table)))
+         (insert bag node)
+         (alexandria:minf min value)
+         (values))))))
 
 (defun dequeue (queue)
   (ematch queue
@@ -58,13 +59,14 @@
 (defun delete-id (queue value id)
   (ematch queue
     ((queue array)
-     (if (typep (aref array value) 'hash-table)
-         (values (progn (setf (aref array value)
-                              (ea*.bag:delete-id (aref array value) id))
-                        (reflesh-minimum queue)
-                        queue)
-                 t)
-         (values queue nil)))))
+     (let ((value (min value (1- (length array)))))
+       (if (typep (aref array value) 'hash-table)
+           (values (progn (setf (aref array value)
+                                (ea*.bag:delete-id (aref array value) id))
+                          (reflesh-minimum queue)
+                          queue)
+                   t)
+           (values queue nil))))))
 
 
 

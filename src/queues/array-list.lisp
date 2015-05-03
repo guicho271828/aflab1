@@ -21,7 +21,7 @@
                   (setf (aref a i) (ea*.bag.l:init))))))
 
 
-(ftype reflesh-minimum queue (values))
+(ftype reflesh-minimum queue boolean)
 (defun reflesh-minimum (queue)
   (ematch queue
     ((queue (min (place min)) array)
@@ -29,9 +29,8 @@
                     (array-in-bounds-p array min)))
          ((or (not in-bound)
               (not (emptyp (aref array min))))
-          in-bound)
-       (incf min))
-     (values))))
+          (return in-bound))
+       (incf min)))))
 
 (defun enqueue (queue value node)
   (ematch queue

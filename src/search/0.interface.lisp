@@ -24,13 +24,12 @@
 
 (define-condition search-condition () ())
 
-(define-interface search-interface (node)
-  ((expand `(function (t t
-                         (function (,node) number)
-                         (function (,node) (vector edge)))
+(define-interface search-interface (open closed cost node edge)
+  ((expand `(function (,open ,closed
+                         (function (,node) ,cost)
+                         (function (,node) (vector ,edge)))
                       (function (,node) (values))))
-   (fetch  `(function (t) (function () ,node))))
-  :export t
+   (fetch  `(function (,open) (function () ,node))))
   :documentation "search engine interface")
 
 ;;; forward search

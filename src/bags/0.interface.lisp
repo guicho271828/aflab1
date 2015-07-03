@@ -11,5 +11,5 @@
    (get1      `(function (,bag) ,content))
    (map-bag   `(function (,bag (function (,content) t)) (values))))
   :export t
-  :documentation "Interface for priority queues")
+  :documentation "Interface for bags")
 

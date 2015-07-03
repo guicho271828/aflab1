@@ -40,7 +40,7 @@
 
 ;;; eager a*
 
-(implement-interface (ea*.s:search-interface a-star-node))
+(implement-interface (ea*.s:search-interface t t number a-star-node edge))
 
 (defun expand (open closed heuristic succ)
   (lambda (node)

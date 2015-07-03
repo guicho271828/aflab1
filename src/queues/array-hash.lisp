@@ -34,11 +34,16 @@
 
 (defun enqueue (queue value node)
   (ematch queue
-    ((queue (min (place min)) array)
-     (let ((value (min value (1- (length array)))))
-       (insert (aref array value) node)
-       (alexandria:minf min value)
-       queue))))
+    ((queue (min (place min)) (array (place array)))
+     ;; update the length twice
+     (unless (array-in-bounds-p array value)
+       (let ((len (length array)))
+         (setf array (adjust-array array (* 2 len)))
+         (loop for i from len below (* 2 len)
+               do (setf (aref a i) (ea*.bag.h:init)))))
+     (insert (aref array value) node)
+     (alexandria:minf min value)
+     queue)))
 
 (defun dequeue (queue)
   (ematch queue

@@ -4,6 +4,7 @@
            :solution-found
            :solution
            :search-condition
+           :search-interface
            :forward-search)
   (:nicknames :ea*.s))
 

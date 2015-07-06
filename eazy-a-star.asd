@@ -22,7 +22,8 @@ Author: guicho ()
                 :trivialib.red-black-tree
                 :structure-interface
                 :immutable-struct
-		:alexandria)
+		:alexandria
+                :function-cache)
   :pathname "src"
   :serial t
   :components ((:file :typedefs)
@@ -32,8 +33,7 @@ Author: guicho ()
                                      (:file :hash)))
                (:module "queues" :serial t
                         :components ((:file :0.interface)
-                                     (:file :array-list)
-                                     (:file :array-hash)))
+                                     (:file :array)))
                (:module "search" :serial t
                         :components ((:file :0.interface)
                                      (:file :a-star)))

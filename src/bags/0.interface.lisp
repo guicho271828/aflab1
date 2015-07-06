@@ -7,15 +7,16 @@
    #:insert
    #:delete-id
    #:get1
-   #:map-bag))
+   #:map-bag
+   #:bag-interface))
 (in-package :ea*.bag)
 
 (define-interface bag-interface (bag content)
-  ((init      `(function ()     ,bag))
-   (emptyp    `(function (,bag) boolean))
-   (insert    `(function (,bag ,content) ,bag))
-   (delete-id `(function (,bag id) ,bag))
-   (get1      `(function (,bag) ,content))
-   (map-bag   `(function (,bag (function (,content) t)) (values))))
+  ((init      `(function ((eql ',content)) (,bag ,content)))
+   (emptyp    `(function ((,bag ,content)) boolean))
+   (insert    `(function ((,bag ,content) ,content) (,bag ,content)))
+   (delete-id `(function ((,bag ,content) id) (,bag ,content)))
+   (get1      `(function ((,bag ,content)) ,content))
+   (map-bag   `(function ((,bag ,content) (function (,content) t)) (values))))
   :documentation "Interface for bags")
 

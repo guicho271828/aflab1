@@ -1,25 +1,34 @@
-(defpackage :eazy-a-star.queue.array.hash
+(defpackage :eazy-a-star.queue.array
   (:use :cl :structure-interface :trivia
         :ea*.b :ea*.bag)
   (:shadowing-import-from :immutable-struct :ftype)
   (:shadow :delete-id :init)
-  (:nicknames :ea*.q.a.h))
-(in-package :ea*.q.a.h)
+  (:nicknames :ea*.q.a))
+(in-package :ea*.q.a)
 
-(defstruct queue
-  (min #.array-dimension-limit :type (mod #.array-dimension-limit))
-  (array (error "no array") :type (array ea*.bag.h:hash-bag)))
+(implement-interface (ea*.q:queue-interface queue-type t))
 
-(implement-interface (ea*.q:queue-interface queue))
+(function-cache:defcached queue-type (bag-type)
+  (alexandria:with-gensyms (queue)
+    (eval `(defstruct ,queue
+             (min #.array-dimension-limit :type (mod #.array-dimension-limit))
+             (array (error "no array") :type (array ,bag-type))))
+    ,queue))
 
-(defun init (&optional (initial-max (expt 2 6)))
-  (make-queue :min (1- initial-max)
-              :array
-              (let ((a (make-array initial-max
-                                   :element-type 'ea*.bag.h:hash-bag)))
-                (dotimes (i initial-max a)
-                  (setf (aref a i) (ea*.bag.h:init))))))
+(deftype queue (bag) (queue-type bag))
 
+(defun queue-constructor (bag-type)
+  (alexandria:symbolicate 'make- (queue-type bag-type)))
+
+(defun init (bag-type)
+  (symbol-macrolet ((initial-max (expt 2 6)))
+    (funcall (queue-constructor bag-type)
+             :min (1- initial-max)
+             :array
+             (let ((a (make-array initial-max
+                                  :element-type bag-type)))
+               (dotimes (i initial-max a)
+                 (setf (aref a i) (ea*.bag:init bag-type)))))))
 
 (ftype reflesh-minimum queue boolean)
 (defun reflesh-minimum (queue)
